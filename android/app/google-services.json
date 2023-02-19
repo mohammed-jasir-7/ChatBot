@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "279249510513",
+    "project_id": "chatbot-fcd56",
+    "storage_bucket": "chatbot-fcd56.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279249510513:android:d2b11484ebd22d4efe3bd0",
+        "android_client_info": {
+          "package_name": "com.example.chatbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "279249510513-5pkjerk9d0p5kn20nktgq3gn3t1lhtmd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chatbot",
+            "certificate_hash": "1708b265ae44fbe8c00ee713938b8e12eff1a9be"
+          }
+        },
+        {
+          "client_id": "279249510513-t8evfahj7ovjo36mese7kkdar7g3ushh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtgj0XHTP4OxRw8u8SJgbTHVZXuMJLuYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "279249510513-t8evfahj7ovjo36mese7kkdar7g3ushh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
