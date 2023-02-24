@@ -1,15 +1,23 @@
+import 'dart:developer';
+
+import 'package:chatbot/Service/authentication/authentication.dart';
+import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/onBoard%20Screen/first_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../util.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key});
+  const SplashScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     authCheck(context);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -43,11 +51,29 @@ class SplashScreen extends StatelessWidget {
   }
 }
 
-Future authCheck(BuildContext context) async {
+//check useer logined or not and navigating to next screeen ===================================
+Future authCheck(
+  BuildContext context,
+) async {
   await Future.delayed(const Duration(seconds: 5));
+  final user = FirebaseAuth.instance.currentUser;
+
   if (context.mounted) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => const OnBoardScreen(),
-    ));
+    if (user != null) {
+      log(user.toString());
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+          (route) => false);
+    } else {
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const OnBoardScreen(),
+          ),
+          (route) => false);
+    }
   }
 }
