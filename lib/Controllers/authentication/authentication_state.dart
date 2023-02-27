@@ -55,3 +55,10 @@ class ValidationErrorState extends AuthenticationState {
   @override
   List<Object?> get props => [];
 }
+
+class LoadingState extends AuthenticationState {
+  bool isLoading = false;
+  LoadingState({required this.isLoading});
+  @override
+  List<Object?> get props => [];
+}

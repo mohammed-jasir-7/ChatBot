@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,7 +38,8 @@ class _VerifyEmailButtonState extends State<VerifyEmailButton> {
   @override
   void dispose() {
     timer?.cancel();
-    if (!isEmailVerified) {
+    if (!FirebaseAuth.instance.currentUser!.emailVerified) {
+      log("delete ");
       FirebaseAuth.instance.currentUser?.delete();
     }
     super.dispose();

@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:chatbot/views/common/widgets/custom_text.dart';
+import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/sign%20up%20screen/widgets/login_form.dart';
 import 'package:chatbot/views/sign%20up%20screen/widgets/signup_form.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../Controllers/authentication/authentication_bloc.dart';
 import '../../util.dart';
 
@@ -77,10 +82,38 @@ class SignUpScreen extends StatelessWidget {
                     },
                   ),
 //============google Sign up =====================================
-                  InkWell(
-                      splashColor: Colors.amber,
-                      onTap: () {},
-                      child: Image.asset("assets/images/googleLogo.png")),
+                  BlocListener<AuthenticationBloc, AuthenticationState>(
+                    // listenWhen: (previous, current) {
+                    //   log("listenwhen");
+                    //   return current is SignedState || previous is SignedState;
+                    // },
+                    listener: (context, state) {
+                      log("googele navigating");
+                      if (state is SignedState) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => HomeScreen(),
+                            ),
+                            (route) => false);
+                      } else if (state is LoadingState) {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.success(
+                            backgroundColor: Color.fromARGB(255, 54, 244, 63),
+                            message: state.isLoading ? "loading" : "success",
+                          ),
+                        );
+                      }
+                    },
+                    child: InkWell(
+                        splashColor: Colors.amber,
+                        onTap: () {
+                          context
+                              .read<AuthenticationBloc>()
+                              .add(GoogleSignInEvent());
+                        },
+                        child: Image.asset("assets/images/googleLogo.png")),
+                  ),
                   const CustomText(
                     size: 12,
                     content: "Sign in with Google",

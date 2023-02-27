@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:chatbot/Service/authentication/authentication.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/onBoard%20Screen/first_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -60,11 +58,10 @@ Future authCheck(
 
   if (context.mounted) {
     if (user != null) {
-      log(user.toString());
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => const HomeScreen(),
+            builder: (context) => HomeScreen(),
           ),
           (route) => false);
     } else {

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "279249510513",
+    "firebase_url": "https://chatbot-fcd56-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "chatbot-fcd56",
     "storage_bucket": "chatbot-fcd56.appspot.com"
   },
@@ -22,7 +23,7 @@
           }
         },
         {
-          "client_id": "279249510513-t8evfahj7ovjo36mese7kkdar7g3ushh.apps.googleusercontent.com",
+          "client_id": "279249510513-cketqnbgoi1dvv4ldm70kj9non9ru0ti.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,7 +36,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "279249510513-t8evfahj7ovjo36mese7kkdar7g3ushh.apps.googleusercontent.com",
+              "client_id": "279249510513-1emg3e2uia9lf6ia154ch707bvbd4c5o.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

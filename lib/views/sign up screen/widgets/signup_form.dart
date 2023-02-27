@@ -74,7 +74,7 @@ class _SignUpFormState extends State<SignUpForm> {
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
+                          builder: (context) => HomeScreen(),
                         ),
                         (route) => false);
                   } else if (state is ValidationErrorState) {
