@@ -3,14 +3,10 @@ import 'dart:developer';
 import 'package:firebase_database/firebase_database.dart';
 
 class SearchUser {
-  final database = FirebaseDatabase.instance.ref("users");
+  final database = FirebaseDatabase.instance.ref();
   Future onSearch(String query) async {
-    final user = await database.get();
+    final user = await database.child('users').get();
 
-    for (var element in user.children) {
-      element.children.forEach((element) {
-        log(element.toString());
-      });
-    }
+    // log(user.children.first['email'] as String);
   }
 }

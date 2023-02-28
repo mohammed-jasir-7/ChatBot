@@ -8,8 +8,6 @@ part 'search_state.dart';
 
 class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc() : super(SearchInitial()) {
-    on<SearchingEvent>((event, emit) {
-      log(event.query);
-    });
+    on<SearchingEvent>((event, emit) {});
   }
 }

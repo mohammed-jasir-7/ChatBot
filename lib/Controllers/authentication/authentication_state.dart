@@ -62,3 +62,9 @@ class LoadingState extends AuthenticationState {
   @override
   List<Object?> get props => [];
 }
+
+class UsernameState extends AuthenticationState {
+  UsernameState();
+  @override
+  List<Object?> get props => [];
+}

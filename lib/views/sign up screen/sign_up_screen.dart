@@ -4,6 +4,7 @@ import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/sign%20up%20screen/widgets/login_form.dart';
 import 'package:chatbot/views/sign%20up%20screen/widgets/signup_form.dart';
+import 'package:chatbot/views/username%20Screen/username_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -83,28 +84,42 @@ class SignUpScreen extends StatelessWidget {
                   ),
 //============google Sign up =====================================
                   BlocListener<AuthenticationBloc, AuthenticationState>(
-                    // listenWhen: (previous, current) {
-                    //   log("listenwhen");
-                    //   return current is SignedState || previous is SignedState;
-                    // },
                     listener: (context, state) {
                       log("googele navigating");
-                      if (state is SignedState) {
+//if user is new navigate to username screeen
+//emit bloc usernamestste
+                      if (state is UsernameState) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const UsernameScreen(),
+                            ),
+                            (route) => false);
+                      }
+//its show the loading time
+//
+                      else if (state is LoadingState) {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.success(
+                            backgroundColor:
+                                const Color.fromARGB(255, 54, 244, 63),
+                            message: state.isLoading ? "loading" : "success",
+                          ),
+                        );
+                      }
+//if user is not  new navigate to HomeScreen
+//emit bloc signed state
+                      else if (state is SignedState) {
                         Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
                               builder: (context) => HomeScreen(),
                             ),
                             (route) => false);
-                      } else if (state is LoadingState) {
-                        showTopSnackBar(
-                          Overlay.of(context),
-                          CustomSnackBar.success(
-                            backgroundColor: Color.fromARGB(255, 54, 244, 63),
-                            message: state.isLoading ? "loading" : "success",
-                          ),
-                        );
                       }
                     },
+//google buttton
+//its triger googleSignevent
+//and button wrapped with bloclistner
                     child: InkWell(
                         splashColor: Colors.amber,
                         onTap: () {

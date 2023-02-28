@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -53,9 +54,9 @@ class AuthService {
 
       // add to database(realtime database)
       final user = await FirebaseAuth.instance.signInWithCredential(credential);
-      final database = FirebaseDatabase.instance.ref("users");
+      FirebaseFirestore _firestire = FirebaseFirestore.instance;
       if (user.additionalUserInfo!.isNewUser == true) {
-        database.push().set({
+        _firestire.collection("users").doc(user.user?.uid).set({
           "username": user.user!.email,
           "photo": user.additionalUserInfo!.profile!['picture'],
           "email": user.user!.email

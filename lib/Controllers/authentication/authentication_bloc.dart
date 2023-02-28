@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:chatbot/Service/authentication/authentication.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -43,18 +44,17 @@ class AuthenticationBloc
     on<VerifiedUserEvent>((event, emit) {
       // add to database(realtime database)
 
-      final database = FirebaseDatabase.instance.ref("users");
+      FirebaseFirestore _firestire = FirebaseFirestore.instance;
       if (user!.additionalUserInfo!.isNewUser == true) {
-        database.child(user!.user!.uid).set({
-          "username": user!.user!.email,
+        _firestire.collection("users").doc(user!.user?.uid).set({
           "photo": user!.additionalUserInfo!.profile!['picture'],
           "email": user!.user!.email
         });
+        log("new user");
+        emit(UsernameState());
       }
       //=================================
       log("verified event");
-
-      emit(SignedState(isSigned: user!));
     });
 
     //login
@@ -79,7 +79,12 @@ class AuthenticationBloc
       if (result is UserCredential) {
         emit(LoadingState(isLoading: false));
         // add(LoadSignUpScreenEvent());
-        emit(SignedState(isSigned: result));
+        if (result.additionalUserInfo!.isNewUser) {
+          emit(UsernameState());
+        } else {
+          emit(SignedState(isSigned: result));
+        }
+
         log("google event");
       } else {
         emit(ValidationErrorState(exceptionOnLogin: result));

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:chatbot/views/sign%20up%20screen/widgets/verify_email_button.dart';
+import 'package:chatbot/views/username%20Screen/username_screen.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -67,14 +68,14 @@ class _SignUpFormState extends State<SignUpForm> {
               sizeHeight15,
               BlocConsumer<AuthenticationBloc, AuthenticationState>(
                 listener: (context, state) {
-                  if (state is SignedState) {
+                  if (state is UsernameState) {
                     log("beforee");
 
                     log("log hreee");
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
+                          builder: (context) => UsernameScreen(),
                         ),
                         (route) => false);
                   } else if (state is ValidationErrorState) {
