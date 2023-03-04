@@ -6,11 +6,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../../util.dart';
 
-class ChatScreen extends StatelessWidget {
-  ChatScreen({super.key});
+class ContactScreen extends StatelessWidget {
+  ContactScreen({super.key});
 
   final List<Bot> users = [];
-  final List<Bot> connections = [];
 
   @override
   Widget build(BuildContext context) {
@@ -46,32 +45,9 @@ class ChatScreen extends StatelessWidget {
                           photo: element.get('photo')));
                     }
                   }
-                  return StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .collection("connections")
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        connections.clear();
-                        if (snapshot.hasData) {
-                          for (var connection in snapshot.data!.docs) {
-                            for (var bot in users) {
-                              if (bot.uid == connection.get('botid')) {
-                                log("message${bot.uid}");
-                                connections.add(bot);
-                              }
-                            }
-                          }
-                          log("connectios length ${connections.length}");
-                          return UsersListInContact(users: connections);
-                        }
-
-                        return Center(child: CircularProgressIndicator());
-                      });
                 }
 
-                return CircularProgressIndicator();
+                return UsersListInContact(users: users);
               }),
         ),
       ),

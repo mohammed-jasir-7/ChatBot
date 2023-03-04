@@ -1,4 +1,5 @@
 import 'package:chatbot/Controllers/authentication/authentication_bloc.dart';
+import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
 import 'package:chatbot/Controllers/search%20bloc/search_bloc.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/splash%20Screen/splash_screen.dart';
@@ -24,6 +25,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SearchBloc(),
+        ),
+        BlocProvider(
+          create: (context) => ChatBloc(),
         ),
       ],
       child: MaterialApp(

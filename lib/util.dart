@@ -8,6 +8,10 @@ const Color colorblack = Color.fromARGB(255, 42, 42, 42);
 const Color colorlogo = Color.fromARGB(255, 4, 147, 147);
 const Color colorSearchBarFilled = Color.fromARGB(255, 51, 114, 99);
 const Color colorSearchBartext = Color.fromARGB(255, 255, 255, 255);
+const Color colorMessageCurrentuser = Color.fromARGB(255, 51, 114, 99);
+const Color colorMessageClientuser = Color.fromARGB(255, 205, 235, 186);
+const Color colorMessageClientText = Color.fromARGB(255, 39, 39, 39);
+const Color colorMessageClientTextWhite = Color.fromARGB(255, 255, 255, 255);
 
 //sized box gap
 Widget sizeHeight15 = const SizedBox(

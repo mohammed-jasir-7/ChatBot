@@ -1,7 +1,7 @@
-class User {
+class Bot {
   String uid;
   String? username;
   String email;
   String? photo;
-  User({required this.uid, required this.email, this.photo, this.username});
+  Bot({required this.uid, required this.email, this.photo, this.username});
 }

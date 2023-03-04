@@ -47,6 +47,7 @@ dependencies:
   curved_navigation_bar: ^1.0.3
   json_annotation: ^4.8.0
   cloud_firestore: ^4.4.3
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,7 @@ flutter:
      - assets/images/chatBot_phone.png
      - assets/images/logoText.png
      - assets/images/googleLogo.png
+     - assets/images/isWatching.png
  
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

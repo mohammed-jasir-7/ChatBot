@@ -1,6 +1,7 @@
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/call%20screen/call_screen.dart';
 import 'package:chatbot/views/chat%20screen/chat_screen.dart';
+import 'package:chatbot/views/new%20chat%20screen/contacts_screen.dart';
 import 'package:chatbot/views/settings%20screen/settings_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class HomeScreen extends StatelessWidget {
   final List screens = [
     const CallScreen(),
     ChatScreen(),
+    ContactScreen(),
     const SettingsScreen(),
   ];
   final ValueNotifier<int> _index = ValueNotifier(1);
@@ -38,6 +40,7 @@ class HomeScreen extends StatelessWidget {
               Icons.call,
             ),
             Icon(Icons.message_outlined),
+            Icon(Icons.people_alt_sharp),
             Icon(Icons.settings)
           ]),
     );

@@ -1,4 +1,5 @@
 import 'package:chatbot/views/splash%20Screen/splash_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -13,10 +14,12 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               final gg = GoogleSignIn();
               gg.disconnect();
+
               FirebaseAuth.instance.signOut();
+
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(

@@ -50,14 +50,12 @@ class AuthService {
       final GoogleSignInAuthentication gAuth = await guser!.authentication;
       final credential = GoogleAuthProvider.credential(
           accessToken: gAuth.accessToken, idToken: gAuth.idToken);
-      log("helloooooooooo${credential.providerId}");
 
       // add to database(realtime database)
       final user = await FirebaseAuth.instance.signInWithCredential(credential);
       FirebaseFirestore _firestire = FirebaseFirestore.instance;
       if (user.additionalUserInfo!.isNewUser == true) {
         _firestire.collection("users").doc(user.user?.uid).set({
-          "username": user.user!.email,
           "photo": user.additionalUserInfo!.profile!['picture'],
           "email": user.user!.email
         });
