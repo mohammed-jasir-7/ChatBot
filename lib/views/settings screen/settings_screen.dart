@@ -1,33 +1,67 @@
-import 'package:chatbot/views/splash%20Screen/splash_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:chatbot/util.dart';
+import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
+  SettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-            onPressed: () async {
-              final gg = GoogleSignIn();
-              gg.disconnect();
-
-              FirebaseAuth.instance.signOut();
-
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SplashScreen(),
+      backgroundColor: backroundColor,
+      body: SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 50),
+                child: CircleAvatar(
+                  radius: 80,
+                ),
+              ),
+              sizeHeight15,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomText(
+                    content: "name",
+                    colour: colorWhite,
+                    size: 20,
                   ),
-                  (route) => false);
-            },
-            child: Text("logout")),
+                  IconButton(onPressed: () {}, icon: Icon(Icons.edit))
+                ],
+              ),
+              Column(
+                children: List.generate(
+                    4,
+                    (index) =>
+                        settingsList(listdata[index][0], listdata[index][1])),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<List> listdata = [
+    [Icons.person, "Account"],
+    [Icons.info, "About us"],
+    [Icons.notifications, "Notifications"],
+    [Icons.shield, "privacy"],
+  ];
+
+  ListTile settingsList(IconData icon, String field) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: iconColorGreen,
+      ),
+      title: CustomText(
+        content: field,
+        colour: colorWhite,
       ),
     );
   }

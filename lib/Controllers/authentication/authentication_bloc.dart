@@ -1,12 +1,9 @@
 import 'dart:developer';
-
 import 'package:chatbot/Service/authentication/authentication.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-
 import '../../Service/search/search_user.dart';
 part 'authentication_event.dart';
 part 'authentication_state.dart';

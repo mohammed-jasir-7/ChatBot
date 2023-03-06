@@ -30,3 +30,15 @@ class FetchmessagesEvent extends ChatEvent {
   // TODO: implement props
   List<Object?> get props => [];
 }
+
+class OnlineEvent extends ChatEvent {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class OfflineEvent extends ChatEvent {
+  @override
+  // TODO: implement props
+  List<Object?> get props => [];
+}

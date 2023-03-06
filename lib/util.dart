@@ -12,8 +12,12 @@ const Color colorMessageCurrentuser = Color.fromARGB(255, 51, 114, 99);
 const Color colorMessageClientuser = Color.fromARGB(255, 205, 235, 186);
 const Color colorMessageClientText = Color.fromARGB(255, 39, 39, 39);
 const Color colorMessageClientTextWhite = Color.fromARGB(255, 255, 255, 255);
+const Color iconColorGreen = Color.fromARGB(255, 114, 222, 170);
 
 //sized box gap
 Widget sizeHeight15 = const SizedBox(
   height: 15,
+);
+Widget sizeWidth20 = const SizedBox(
+  width: 20,
 );

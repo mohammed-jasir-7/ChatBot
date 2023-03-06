@@ -15,11 +15,31 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     final chatService = ChatService();
     on<EnterToChatEvent>((event, emit) async {
       log("enter chat event ${event.bot.uid}");
+      log("after chat first screennn");
       String roomID = await chatService.onCreateRoomId(event.bot.uid);
       await chatService.connnections(event.bot.uid);
+
       emit(LoadingState());
+
       emit(ChatFirstState(bot: event.bot, roomID: roomID));
+
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(event.bot.uid)
+          .snapshots()
+          .listen((event) {
+        if (event.get("isOnline")) {
+          log("online");
+          add(OnlineEvent());
+        } else {
+          log("offline");
+          add(OfflineEvent());
+        }
+      });
     });
+
+    on<OnlineEvent>((event, emit) => emit(OnlineState()));
+    on<OfflineEvent>((event, emit) => emit(OfflineState()));
     on<SendMessageEvent>((event, emit) async {
       chatService.onMessaging(message: event.messages, roomID: event.roomID);
     });

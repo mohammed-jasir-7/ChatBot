@@ -3,19 +3,20 @@ import 'dart:developer';
 import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
+import 'package:chatbot/views/individual%20chat%20screen/widgets/message.dart';
+import 'package:chatbot/views/profile%20screen/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
-
 import '../../Models/user_model.dart';
 
 ValueNotifier<bool> isWatcing = ValueNotifier(false);
 
 class IndividualChatScreen extends StatefulWidget {
-  IndividualChatScreen({super.key, required this.bot, required this.roomID});
+  const IndividualChatScreen(
+      {super.key, required this.bot, required this.roomID});
   final Bot bot;
   final String roomID;
 
@@ -29,7 +30,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
 
   final _currentuser = FirebaseAuth.instance.currentUser;
 
-  ScrollController _scrollController = new ScrollController();
+  final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
@@ -43,12 +44,6 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
     }
 
     super.initState();
-  }
-
-  @override
-  void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
-    super.didChangeDependencies();
   }
 
   @override
@@ -104,14 +99,49 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
               Icons.arrow_back,
               color: colorWhite,
             )),
-        title: CustomText(
-          content: widget.bot.email,
-          colour: colorWhite,
+        title: InkWell(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(user: widget.bot),
+                ));
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                content: widget.bot.email,
+                colour: colorWhite,
+              ),
+              BlocBuilder<ChatBloc, ChatState>(
+                builder: (context, state) {
+                  if (state is OnlineState) {
+                    return const CustomText(
+                      content: "online",
+                      colour: colorWhite,
+                      size: 10,
+                    );
+                  } else {
+                    return const CustomText(
+                      content: "offline",
+                      colour: colorWhite,
+                      size: 10,
+                    );
+                  }
+                },
+              )
+            ],
+          ),
         ),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20),
-            child: Center(child: CircleAvatar(radius: 19)),
+            padding: const EdgeInsets.only(right: 20),
+            child: Center(
+                child: CircleAvatar(
+              radius: 19,
+              backgroundImage: NetworkImage(widget.bot.photo ?? "nnn"),
+            )),
           )
         ],
       ),
@@ -143,6 +173,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          log(" enter snapshot has data${snapshot.data!.docs}");
                           return ListView.builder(
                             controller: _scrollController,
                             reverse: true,
@@ -168,14 +199,16 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return snapshot.data!.data()![widget.bot.uid] ==
-                                    false ||
-                                snapshot.data!.data()![widget.bot.uid] == null
-                            ? const SizedBox()
-                            : Image.asset(
-                                "assets/images/isWatching.png",
-                                width: 60,
-                              );
+                        return snapshot.data != null
+                            ? snapshot.data!.data()![widget.bot.uid] == false ||
+                                    snapshot.data!.data()![widget.bot.uid] ==
+                                        null
+                                ? const SizedBox()
+                                : Image.asset(
+                                    "assets/images/isWatching.png",
+                                    width: 60,
+                                  )
+                            : const SizedBox();
                       } else {
                         return const SizedBox();
                       }
@@ -234,69 +267,5 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
         hintText: "Type here ......",
         border: InputBorder.none,
         errorBorder: InputBorder.none);
-  }
-}
-
-class Message extends StatelessWidget {
-  Message({super.key, required this.message, required this.uID});
-  QueryDocumentSnapshot<Map<String, dynamic>> message;
-  final String uID;
-
-  @override
-  Widget build(BuildContext context) {
-    String date = message['time'] == null
-        ? "time"
-        : DateFormat.jm()
-            .format((message['time'] as Timestamp).toDate())
-            .toString();
-
-    return Padding(
-      padding: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
-      child: Container(
-          alignment: message['sendby'] == uID
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: message['sendby'] == uID
-                  ? colorMessageCurrentuser
-                  : colorMessageClientuser,
-            ),
-            constraints: const BoxConstraints(minWidth: 20, maxWidth: 200),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  CustomText(
-                    content: message["message"],
-                    size: 15,
-                    colour: message['sendby'] == uID
-                        ? colorMessageClientTextWhite
-                        : colorMessageClientText,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomText(
-                        content: date,
-                        size: 11,
-                        colour: message['sendby'] == uID
-                            ? colorMessageClientTextWhite.withOpacity(0.5)
-                            : colorMessageClientText.withOpacity(0.5),
-                      ),
-                      Icon(
-                        Icons.done_all,
-                        color: colorMessageClientTextWhite.withOpacity(0.5),
-                        size: 15,
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          )),
-    );
   }
 }
