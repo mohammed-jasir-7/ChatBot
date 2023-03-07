@@ -173,7 +173,6 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
                           .snapshots(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
-                          log(" enter snapshot has data${snapshot.data!.docs}");
                           return ListView.builder(
                             controller: _scrollController,
                             reverse: true,
@@ -199,7 +198,8 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-                        return snapshot.data != null
+                        return snapshot.data != null &&
+                                snapshot.data!.data() != null
                             ? snapshot.data!.data()![widget.bot.uid] == false ||
                                     snapshot.data!.data()![widget.bot.uid] ==
                                         null

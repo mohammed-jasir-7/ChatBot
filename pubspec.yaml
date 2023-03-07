@@ -49,6 +49,8 @@ dependencies:
   cloud_firestore: ^4.4.3
   intl: ^0.17.0
   image_picker: ^0.8.6+4
+  file_picker: ^5.2.5
+  firebase_storage: ^11.0.14
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +86,7 @@ flutter:
      - assets/images/logoText.png
      - assets/images/googleLogo.png
      - assets/images/isWatching.png
+     - assets/images/nullPhoto.jpeg
  
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

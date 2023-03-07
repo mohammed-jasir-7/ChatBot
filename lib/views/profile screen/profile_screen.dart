@@ -1,17 +1,11 @@
-import 'dart:developer';
-
 import 'package:chatbot/Models/user_model.dart';
 import 'package:chatbot/util.dart';
-
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-
 import '../common/widgets/custom_text.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({super.key, required this.user});
+  const ProfileScreen({super.key, required this.user});
   final Bot user;
-  final ImagePicker _picker = ImagePicker();
 
   @override
   Widget build(BuildContext context) {
@@ -51,15 +45,7 @@ class ProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                          onPressed: () async {
-                            try {
-                              final XFile? image = await _picker.pickImage(
-                                  source: ImageSource.gallery);
-                            } catch (e) {
-                              log(e.toString());
-                            }
-                            // Pick an image
-                          },
+                          onPressed: () async {},
                           icon: Icon(
                             Icons.call_outlined,
                             color: iconColorGreen,

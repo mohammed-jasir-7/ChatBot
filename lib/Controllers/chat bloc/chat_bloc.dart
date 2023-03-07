@@ -27,12 +27,14 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           .collection("users")
           .doc(event.bot.uid)
           .snapshots()
-          .listen((event) {
-        if (event.get("isOnline")) {
-          log("online");
+          .listen((data) {
+        if (data.get("isOnline")) {
+          log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk ${data.get("isOnline")} ${event.bot.email}");
+          log("online bloc");
           add(OnlineEvent());
         } else {
-          log("offline");
+          log("gggggggggggggggggggggggggggggg ${data.get("isOnline")}");
+          log("offline bloc");
           add(OfflineEvent());
         }
       });

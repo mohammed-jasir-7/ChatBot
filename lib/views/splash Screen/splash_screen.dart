@@ -1,8 +1,10 @@
 import 'dart:developer';
+import 'package:chatbot/Controllers/profile/profile_bloc_bloc.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/onBoard%20Screen/first_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../util.dart';
@@ -58,6 +60,7 @@ Future authCheck(
 
   if (context.mounted) {
     if (user != null) {
+      context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
