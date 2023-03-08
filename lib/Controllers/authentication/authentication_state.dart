@@ -64,7 +64,17 @@ class LoadingState extends AuthenticationState {
 }
 
 class UsernameState extends AuthenticationState {
-  UsernameState();
+  const UsernameState();
+  @override
+  List<Object?> get props => [];
+}
+
+class LoadForgotPassowrdState extends AuthenticationState {
+  @override
+  List<Object?> get props => [];
+}
+
+class ResetPasswordSuccessState extends AuthenticationState {
   @override
   List<Object?> get props => [];
 }

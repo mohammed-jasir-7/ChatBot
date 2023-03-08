@@ -66,4 +66,13 @@ class AuthService {
       return e.code;
     }
   }
+
+  static Future<String?> forgotpassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    }
+    return null;
+  }
 }

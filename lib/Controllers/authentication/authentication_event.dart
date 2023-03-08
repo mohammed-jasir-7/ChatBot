@@ -40,3 +40,18 @@ class GoogleSignInEvent extends AuthenticationEvent {
   @override
   List<Object?> get props => [];
 }
+
+/// forgot password event
+class ForgotPasswordEvent extends AuthenticationEvent {
+  final String email;
+
+  const ForgotPasswordEvent({required this.email});
+  @override
+  List<Object?> get props => [];
+}
+
+/// forgot password screen loading event
+class LoadingForgotPasswordScreen extends AuthenticationEvent {
+  @override
+  List<Object?> get props => [];
+}

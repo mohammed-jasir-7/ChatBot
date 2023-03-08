@@ -5,8 +5,8 @@ import '../../../util.dart';
 import '../../common/widgets/custom_text.dart';
 
 class Message extends StatelessWidget {
-  Message({super.key, required this.message, required this.uID});
-  QueryDocumentSnapshot<Map<String, dynamic>> message;
+  const Message({super.key, required this.message, required this.uID});
+  final QueryDocumentSnapshot<Map<String, dynamic>> message;
   final String uID;
 
   @override
@@ -21,8 +21,8 @@ class Message extends StatelessWidget {
       padding: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
       child: Container(
           alignment: message['sendby'] == uID
-              ? Alignment.centerLeft
-              : Alignment.centerRight,
+              ? Alignment.centerRight
+              : Alignment.centerLeft,
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
@@ -53,11 +53,13 @@ class Message extends StatelessWidget {
                             ? colorMessageClientTextWhite.withOpacity(0.5)
                             : colorMessageClientText.withOpacity(0.5),
                       ),
-                      Icon(
-                        Icons.done_all,
-                        color: colorMessageClientTextWhite.withOpacity(0.5),
-                        size: 15,
-                      )
+                      message['sendby'] == uID
+                          ? const SizedBox.shrink()
+                          : Icon(
+                              Icons.done_all,
+                              color: colorMessageClientText.withOpacity(0.5),
+                              size: 15,
+                            )
                     ],
                   )
                 ],

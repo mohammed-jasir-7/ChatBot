@@ -13,8 +13,6 @@ class AuthenticationBloc
   UserCredential? user;
   AuthenticationBloc() : super(AuthenticationInitial()) {
     on<LoadLoginScreenEvent>((event, emit) {
-      final search = SearchUser();
-      search.onSearch();
       emit(LoginState());
     });
     on<LoadSignUpScreenEvent>((event, emit) {
@@ -89,6 +87,21 @@ class AuthenticationBloc
         log("google event");
       } else {
         emit(ValidationErrorState(exceptionOnLogin: result));
+      }
+    });
+    //load forgott screeen
+    on<LoadingForgotPasswordScreen>(
+        (event, emit) => emit(LoadForgotPassowrdState()));
+    //Forgot password event
+    on<ForgotPasswordEvent>((event, emit) async {
+      final result = await AuthService.forgotpassword(event.email);
+
+      if (result != null) {
+        log("hhhhhhhhhhhhhhh");
+        emit(ValidationErrorState(exceptionOnLogin: result));
+      } else {
+        emit(ResetPasswordSuccessState());
+        add(LoadLoginScreenEvent());
       }
     });
   }

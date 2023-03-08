@@ -1,16 +1,10 @@
-import 'dart:developer';
-
-import 'package:chatbot/Controllers/profile/profile_bloc_bloc.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
+import 'package:chatbot/views/settings%20screen/widgets/profile_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-import '../../Models/user_model.dart';
 import '../splash Screen/splash_screen.dart';
 
 final user = FirebaseAuth.instance.currentUser;
@@ -20,7 +14,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
     return Scaffold(
       backgroundColor: backroundColor,
       body: SizedBox(
@@ -59,13 +52,14 @@ class SettingsScreen extends StatelessWidget {
                       final gg = GoogleSignIn();
                       gg.disconnect();
                       FirebaseFirestore.instance.clearPersistence();
-
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SplashScreen(),
-                          ),
-                          (route) => false);
+                      if (context.mounted) {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SplashScreen(),
+                            ),
+                            (route) => false);
+                      }
                     },
                     child: const Text("logout"))
               ],
@@ -95,52 +89,4 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-class ProfileImage extends StatelessWidget {
-  const ProfileImage({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        BlocBuilder<ProfileBlocBloc, ProfileBlocState>(
-          builder: (context, state) {
-            if (state is LoadCurrentUserState) {
-              log("vvvvvvvvvvvvvvvvvvvvvvvvvvv settings ${(state.props.first as Bot).email}");
-              return CircleAvatar(
-                radius: 80,
-                backgroundImage: state.currentUser.photo == null
-                    ? const AssetImage("assets/images/nullPhoto.jpeg")
-                        as ImageProvider
-                    : NetworkImage(state.currentUser.photo ?? ""),
-              );
-            } else {
-              return const CircleAvatar(
-                radius: 80,
-                backgroundImage: AssetImage("assets/images/nullPhoto.jpeg"),
-              );
-            }
-          },
-        ),
-        Positioned(
-            bottom: 20,
-            child: IconButton(
-                onPressed: () =>
-                    context.read<ProfileBlocBloc>().add(UpdateFileEvent()),
-                icon: const Icon(
-                  Icons.camera,
-                  color: iconColorGreen,
-                )))
-      ],
-    );
-  }
-}
-
-_updateProfileImage() async {
-  final result = await FilePicker.platform
-      .pickFiles(type: FileType.custom, allowedExtensions: ["jpg"]);
-  if (result != null) {}
 }

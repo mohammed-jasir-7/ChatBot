@@ -6,7 +6,11 @@ abstract class ProfileBlocState extends Equatable {
 
 class ProfileBlocInitial extends ProfileBlocState {
   @override
-  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+class LoadingState extends ProfileBlocState {
+  @override
   List<Object?> get props => [];
 }
 
@@ -37,7 +41,11 @@ class UpdateSuccessState extends ProfileBlocState {
 }
 
 class UpdateErorrState extends ProfileBlocState {
+  final String messages;
+
+  const UpdateErorrState({required this.messages});
   @override
+
   // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [];
 }

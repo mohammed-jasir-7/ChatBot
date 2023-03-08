@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chatbot/Controllers/authentication/authentication_bloc.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:email_validator/email_validator.dart';
@@ -60,7 +62,26 @@ class _LoginFormState extends State<LoginForm> {
                 style: GoogleFonts.poppins(color: colorWhite),
                 decoration: textFormFieldStyle("enter password"),
               ),
-              sizeHeight15,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () {
+                        context
+                            .read<AuthenticationBloc>()
+                            .add(LoadingForgotPasswordScreen());
+                      },
+                      child: CustomText(
+                        content: "forgot password",
+                        colour: colorWhite.withOpacity(0.7),
+                      ),
+                    ),
+                  ),
+                  sizeHeight15,
+                ],
+              ),
               SizedBox(
                 width: 300,
 //block listner

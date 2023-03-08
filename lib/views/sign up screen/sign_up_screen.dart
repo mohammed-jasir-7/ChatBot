@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
+import 'package:chatbot/views/sign%20up%20screen/widgets/forgot_password.dart';
 import 'package:chatbot/views/sign%20up%20screen/widgets/login_form.dart';
 import 'package:chatbot/views/sign%20up%20screen/widgets/signup_form.dart';
 import 'package:chatbot/views/username%20Screen/username_screen.dart';
@@ -77,6 +76,8 @@ class SignUpScreen extends StatelessWidget {
                         return const LoginForm();
                       } else if (state is SignUpState) {
                         return const SignUpForm();
+                      } else if (state is LoadForgotPassowrdState) {
+                        return const ForgotPassword();
                       } else {
                         return const SignUpForm();
                       }
@@ -85,7 +86,6 @@ class SignUpScreen extends StatelessWidget {
 //============google Sign up =====================================
                   BlocListener<AuthenticationBloc, AuthenticationState>(
                     listener: (context, state) {
-                      log("googele navigating");
 //if user is new navigate to username screeen
 //emit bloc usernamestste
                       if (state is UsernameState) {
@@ -115,6 +115,16 @@ class SignUpScreen extends StatelessWidget {
                               builder: (context) => HomeScreen(),
                             ),
                             (route) => false);
+                      } else if (state is ValidationErrorState) {
+                        showTopNotification(
+                            color: Colors.red,
+                            context: context,
+                            state: state.exceptionOnLogin);
+                      } else if (state is ResetPasswordSuccessState) {
+                        showTopNotification(
+                            color: Colors.green,
+                            context: context,
+                            state: "Reset link send on email");
                       }
                     },
 //google buttton

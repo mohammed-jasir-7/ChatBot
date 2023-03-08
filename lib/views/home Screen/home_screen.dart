@@ -9,6 +9,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../Controllers/profile/profile_bloc_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -63,6 +66,7 @@ class ChatIcon extends StatefulWidget {
 class _ChatIconState extends State<ChatIcon> with WidgetsBindingObserver {
   @override
   void initState() {
+    context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
     WidgetsBinding.instance.addObserver(this);
     FirebaseFirestore.instance
         .collection('users')

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 //colors
 
 const Color primaaryColor = Color.fromARGB(0, 76, 144, 212);
@@ -21,3 +23,16 @@ Widget sizeHeight15 = const SizedBox(
 Widget sizeWidth20 = const SizedBox(
   width: 20,
 );
+// notification
+void showTopNotification(
+    {required BuildContext context,
+    required String state,
+    required MaterialColor color}) {
+  return showTopSnackBar(
+    Overlay.of(context),
+    CustomSnackBar.success(
+      backgroundColor: color,
+      message: state,
+    ),
+  );
+}

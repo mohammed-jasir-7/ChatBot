@@ -2,6 +2,7 @@ import 'package:chatbot/Controllers/authentication/authentication_bloc.dart';
 import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
 import 'package:chatbot/Controllers/profile/profile_bloc_bloc.dart';
 import 'package:chatbot/Controllers/search%20bloc/search_bloc.dart';
+import 'package:chatbot/Service/profile%20service/profile_service.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/splash%20Screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,7 +32,8 @@ class MyApp extends StatelessWidget {
           create: (context) => ChatBloc(),
         ),
         BlocProvider(
-          create: (context) => ProfileBlocBloc(),
+          create: (context) =>
+              ProfileBlocBloc(profileService: ProfileService()),
         ),
       ],
       child: MaterialApp(

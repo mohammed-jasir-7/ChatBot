@@ -18,12 +18,12 @@ class ProfileService {
   }
 
   //update to database
-  Future<bool> uploadFile(FilePickerResult image) async {
+  Future<dynamic> uploadFile(FilePickerResult image) async {
     final imagePath = "${image.paths.first}";
     final File file = File(imagePath);
     final path = currentUser;
     final ref = FirebaseStorage.instance.ref().child(path).child(path);
-    bool isUploaded = false;
+    String? isUploaded;
     try {
       UploadTask uploadTask = ref.putFile(file);
       uploadTask.whenComplete(
@@ -33,12 +33,11 @@ class ProfileService {
               .collection("users")
               .doc(currentUser)
               .update({"photo": url});
-          isUploaded = true;
         },
       );
     } on FirebaseException catch (e) {
       log("uploadfile function error ${e.code}");
-      isUploaded = false;
+      isUploaded = e.code;
     }
 
     log("image uploaded");
