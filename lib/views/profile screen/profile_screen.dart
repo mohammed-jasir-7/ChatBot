@@ -46,21 +46,21 @@ class ProfileScreen extends StatelessWidget {
                     children: [
                       IconButton(
                           onPressed: () async {},
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.call_outlined,
                             color: iconColorGreen,
                             size: 30,
                           )),
                       IconButton(
                           onPressed: () {},
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.video_call,
                             color: iconColorGreen,
                             size: 30,
                           )),
                       IconButton(
                           onPressed: () {},
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.search,
                             color: iconColorGreen,
                             size: 30,
@@ -68,13 +68,18 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                Divider(),
+                const Divider(),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     sizeWidth20,
+                    const CustomText(
+                      content: "info : ",
+                      colour: colorWhite,
+                      size: 15,
+                    ),
                     CustomText(
-                      content: "info",
+                      content: user.email,
                       colour: colorWhite,
                       size: 15,
                     ),
@@ -85,38 +90,44 @@ class ProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     sizeWidth20,
+                    const CustomText(
+                      content: "username : ",
+                      colour: colorWhite,
+                      size: 15,
+                    ),
                     CustomText(
-                      content: "username",
+                      content: user.username ?? "",
                       colour: colorWhite,
                       size: 15,
                     ),
                   ],
                 ),
-                Divider(),
-                ListTile(
-                  leading: Icon(
-                    Icons.notifications,
-                    color: iconColorGreen,
-                  ),
-                  title: CustomText(
-                    content: "mute Notification",
-                    colour: colorWhite,
-                  ),
-                  trailing: Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: Switch(
-                      activeColor: iconColorGreen,
-                      value: true,
-                      onChanged: (value) {},
+                const Divider(),
+                Row(
+                  children: [
+                    sizeWidth20,
+                    const CustomText(
+                      content: "clear chat",
+                      colour: errorColor,
                     ),
-                  ),
+                  ],
                 ),
-                Divider(),
+                sizeHeight15,
+                Row(
+                  children: [
+                    sizeWidth20,
+                    const CustomText(
+                      content: "block",
+                      colour: errorColor,
+                    ),
+                  ],
+                ),
+                const Divider(),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     sizeWidth20,
-                    CustomText(
+                    const CustomText(
                       content: "group in common",
                       colour: colorWhite,
                       size: 15,

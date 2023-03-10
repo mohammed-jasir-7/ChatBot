@@ -11,8 +11,10 @@ import '../../common/widgets/textformcommon_style.dart';
 import '../../individual chat screen/individual_chat_screen.dart';
 
 class UsersListInContact extends StatefulWidget {
-  const UsersListInContact({super.key, required this.users});
+  const UsersListInContact(
+      {super.key, required this.users, required this.iscontactScreen});
   final List<Bot> users;
+  final bool iscontactScreen;
 
   @override
   State<UsersListInContact> createState() => _UsersListInContactState();
@@ -81,38 +83,66 @@ class _UsersListInContactState extends State<UsersListInContact> {
                   },
                   child: InkWell(
                     onTap: () {
-                      context
-                          .read<ChatBloc>()
-                          .add(EnterToChatEvent(bot: result[index]));
+                      if (!widget.iscontactScreen) {
+                        context
+                            .read<ChatBloc>()
+                            .add(EnterToChatEvent(bot: result[index]));
+                      }
                     },
                     child: ListTile(
                       leading: CircleAvatar(
                         backgroundColor: colorWhite,
                         radius: 20,
-                        backgroundImage:
-                            NetworkImage(result[index].photo ?? "jjjj"),
+                        backgroundImage: NetworkImage(result[index].photo ??
+                            "assets/images/nullPhoto.jpeg"),
                       ),
-                      trailing: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: const [
-                          CircleAvatar(
-                            backgroundColor: Colors.green,
-                            radius: 10,
-                            child: Center(
-                                child: CustomText(
-                              content: "1",
-                              colour: colorSearchBartext,
-                              size: 10,
-                            )),
-                          ),
-                          CustomText(
-                            content: "5:11",
-                            colour: colorWhite,
-                          )
-                        ],
-                      ),
+
+                      ///connection button
+                      trailing: widget.iscontactScreen
+                          ? SizedBox(
+                              height: 25,
+                              child: BlocBuilder<ChatBloc, ChatState>(
+                                builder: (context, state) {
+                                  if (state is PendingState) {
+                                    return ElevatedButton(
+                                        onPressed: () {},
+                                        child: const CustomText(
+                                          content: "pending",
+                                          colour: colorlogo,
+                                          size: 10,
+                                        ));
+                                  }
+                                  return ElevatedButton(
+                                      onPressed: () {},
+                                      child: const CustomText(
+                                        content: "Connect",
+                                        colour: colorlogo,
+                                        size: 10,
+                                      ));
+                                },
+                              ),
+                            )
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: const [
+                                CircleAvatar(
+                                  backgroundColor: Colors.green,
+                                  radius: 10,
+                                  child: Center(
+                                      child: CustomText(
+                                    content: "1",
+                                    colour: colorSearchBartext,
+                                    size: 10,
+                                  )),
+                                ),
+                                CustomText(
+                                  content: "5:11",
+                                  colour: colorWhite,
+                                )
+                              ],
+                            ),
                       title: CustomText(
-                        content: result[index].email,
+                        content: result[index].username ?? "",
                         colour: colorWhite,
                       ),
                     ),

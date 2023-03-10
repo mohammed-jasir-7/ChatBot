@@ -4,7 +4,9 @@ import 'package:chatbot/views/settings%20screen/widgets/profile_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../Controllers/profile/profile_bloc_bloc.dart';
 import '../splash Screen/splash_screen.dart';
 
 final user = FirebaseAuth.instance.currentUser;
@@ -31,10 +33,17 @@ class SettingsScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const CustomText(
-                      content: "name",
-                      colour: colorWhite,
-                      size: 20,
+                    BlocBuilder<ProfileBlocBloc, ProfileBlocState>(
+                      builder: (context, state) {
+                        if (state is LoadCurrentUserState) {
+                          return CustomText(
+                            content: state.currentUser.username ?? "",
+                            colour: colorWhite,
+                            size: 20,
+                          );
+                        }
+                        return SizedBox();
+                      },
                     ),
                     IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
                   ],

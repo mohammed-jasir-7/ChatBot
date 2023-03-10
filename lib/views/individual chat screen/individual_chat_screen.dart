@@ -1,16 +1,14 @@
 import 'dart:developer';
-
 import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
 import 'package:chatbot/util.dart';
-import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:chatbot/views/individual%20chat%20screen/widgets/message.dart';
-import 'package:chatbot/views/profile%20screen/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../Models/user_model.dart';
+import 'widgets/appbar.dart';
 
 ValueNotifier<bool> isWatcing = ValueNotifier(false);
 
@@ -89,75 +87,20 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
     return Scaffold(
       extendBody: true,
       backgroundColor: backroundColor,
-      appBar: AppBar(
-        backgroundColor: backroundColor,
-        leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(
-              Icons.arrow_back,
-              color: colorWhite,
-            )),
-        title: InkWell(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(user: widget.bot),
-                ));
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomText(
-                content: widget.bot.email,
-                colour: colorWhite,
-              ),
-              BlocBuilder<ChatBloc, ChatState>(
-                builder: (context, state) {
-                  if (state is OnlineState) {
-                    return const CustomText(
-                      content: "online",
-                      colour: colorWhite,
-                      size: 10,
-                    );
-                  } else {
-                    return const CustomText(
-                      content: "offline",
-                      colour: colorWhite,
-                      size: 10,
-                    );
-                  }
-                },
-              )
-            ],
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: Center(
-                child: CircleAvatar(
-              radius: 19,
-              backgroundImage: NetworkImage(widget.bot.photo ?? "nnn"),
-            )),
-          )
-        ],
-      ),
+      appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: AppBarForChat(bot: widget.bot)),
       body: Container(
         width: double.infinity,
         height: double.infinity,
         color: backroundColor,
         child: SizedBox(
           child: Stack(children: [
-            Center(
-              child: Image.asset(
-                "assets/images/doodle2.png",
-                width: double.infinity,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.low,
-              ),
+            Image.asset(
+              "assets/images/doodle2.png",
+              width: double.infinity,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.low,
             ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -21,24 +21,34 @@ class SendMessageEvent extends ChatEvent {
   SendMessageEvent({required this.messages, required this.roomID});
 
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
 class FetchmessagesEvent extends ChatEvent {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
 class OnlineEvent extends ChatEvent {
   @override
-  // TODO: implement props
   List<Object?> get props => [];
 }
 
 class OfflineEvent extends ChatEvent {
   @override
-  // TODO: implement props
+  List<Object?> get props => [];
+}
+
+/// send req event
+class SendRequestEvent extends ChatEvent {
+  final String botId;
+
+  const SendRequestEvent({required this.botId});
+  @override
+  List<Object?> get props => [];
+}
+
+class RemoveRequestEvent extends ChatEvent {
+  @override
   List<Object?> get props => [];
 }

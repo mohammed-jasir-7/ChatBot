@@ -34,6 +34,7 @@ class ContactScreen extends StatelessWidget {
                 log("Strream building");
 
                 if (snapshot.hasData) {
+                  log("${snapshot.data!.docs.length}");
                   users.clear();
                   for (var element in snapshot.data!.docs) {
                     if (FirebaseAuth.instance.currentUser!.uid !=
@@ -41,13 +42,16 @@ class ContactScreen extends StatelessWidget {
                       users.add(Bot(
                           uid: element.reference.id,
                           email: element.get('email'),
-                          username: element.get('userName'),
+                          username: element.data()['userName'] ?? "",
                           photo: element.get('photo')));
                     }
                   }
                 }
 
-                return UsersListInContact(users: users);
+                return UsersListInContact(
+                  users: users,
+                  iscontactScreen: true,
+                );
               }),
         ),
       ),

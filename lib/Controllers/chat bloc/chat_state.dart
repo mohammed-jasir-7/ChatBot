@@ -30,7 +30,7 @@ class LoadingState extends ChatState {
 class ChatData extends ChatState {
   final List<QueryDocumentSnapshot<Map<String, dynamic>>> chats;
 
-  ChatData({required this.chats});
+  const ChatData({required this.chats});
 
   @override
   // TODO: implement props
@@ -43,6 +43,21 @@ class OnlineState extends ChatState {
 }
 
 class OfflineState extends ChatState {
+  @override
+  List<Object?> get props => [];
+}
+
+class RequestState extends ChatState {
+  @override
+  List<Object?> get props => [];
+}
+
+class PendingState extends ChatState {
+  @override
+  List<Object?> get props => [];
+}
+
+class AcceptedState extends ChatState {
   @override
   List<Object?> get props => [];
 }

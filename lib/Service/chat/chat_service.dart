@@ -5,15 +5,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatService {
+  //send request
+  Future sendRequest(String botID) async {
+    final String currentUser = FirebaseAuth.instance.currentUser!.uid;
+    //add users database
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(botID)
+        .collection("request")
+        .doc(currentUser)
+        .set({"userid": currentUser, "time": FieldValue.serverTimestamp()});
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(currentUser)
+        .collection("sendRequest")
+        .doc(botID)
+        .set({"userid": botID, "time": FieldValue.serverTimestamp()});
+    log("send req done");
+  }
+
   Future<String> onCreateRoomId(String botUid) async {
     final String currentUser = FirebaseAuth.instance.currentUser!.uid;
     if (botUid.codeUnits[0] > currentUser.codeUnits[0]) {
-      String roomId = "${botUid}${currentUser}";
-      log(" trur  ${botUid} and ${currentUser}");
+      String roomId = "$botUid$currentUser";
+      log(" trur  $botUid and $currentUser");
       return roomId;
     } else {
-      String roomId = "${currentUser}${botUid}";
-      log(" flas  ${currentUser} and ${botUid}");
+      String roomId = "$currentUser$botUid";
+      log(" flas  $currentUser and $botUid");
       return roomId;
     }
   }

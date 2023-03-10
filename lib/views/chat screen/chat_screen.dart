@@ -42,7 +42,7 @@ class ChatScreen extends StatelessWidget {
                       users.add(Bot(
                           uid: element.reference.id,
                           email: element.get('email'),
-                          username: element.get('userName'),
+                          username: element.get('userName') ?? "",
                           photo: element.get('photo')));
                     }
                   }
@@ -64,7 +64,10 @@ class ChatScreen extends StatelessWidget {
                             }
                           }
                           log("connectios length ${connections.length}");
-                          return UsersListInContact(users: connections);
+                          return UsersListInContact(
+                            users: connections,
+                            iscontactScreen: false,
+                          );
                         }
 
                         return Center(child: CircularProgressIndicator());
