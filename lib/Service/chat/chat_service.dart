@@ -9,19 +9,32 @@ class ChatService {
   Future sendRequest(String botID) async {
     final String currentUser = FirebaseAuth.instance.currentUser!.uid;
     //add users database
-    await FirebaseFirestore.instance
+    bool isExistInRequest = false;
+    final result = await FirebaseFirestore.instance
         .collection("users")
-        .doc(botID)
+        .doc(currentUser)
         .collection("request")
-        .doc(currentUser)
-        .set({"userid": currentUser, "time": FieldValue.serverTimestamp()});
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(currentUser)
-        .collection("sendRequest")
-        .doc(botID)
-        .set({"userid": botID, "time": FieldValue.serverTimestamp()});
-    log("send req done");
+        .get();
+    for (var doc in result.docs) {
+      if (doc.data()["userId"] == botID) {
+        isExistInRequest = true;
+      }
+    }
+    if (!isExistInRequest) {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(botID)
+          .collection("request")
+          .doc(currentUser)
+          .set({"userId": currentUser, "time": FieldValue.serverTimestamp()});
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUser)
+          .collection("sendRequest")
+          .doc(botID)
+          .set({"userId": botID, "time": FieldValue.serverTimestamp()});
+      log("send req done");
+    }
   }
 
   Future<String> onCreateRoomId(String botUid) async {
@@ -61,7 +74,7 @@ class ChatService {
     List<QueryDocumentSnapshot<Map<String, dynamic>>>? messages;
 
     try {
-      await FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection("chatroom")
           .doc(roomID)
           .collection("chats")
@@ -77,8 +90,11 @@ class ChatService {
     }
   }
 
+  ///accept request and add uid to connection
+  ///remove uid from request ,sendRequest
   Future connnections(String botUid) async {
     final String currentUser = FirebaseAuth.instance.currentUser!.uid;
+    //current user side
     FirebaseFirestore.instance
         .collection("users")
         .doc(currentUser)
@@ -87,11 +103,64 @@ class ChatService {
         .set({"unread": "count", "botid": botUid});
     FirebaseFirestore.instance
         .collection("users")
+        .doc(currentUser)
+        .collection("request")
+        .doc(botUid)
+        .delete();
+//other side
+    FirebaseFirestore.instance
+        .collection("users")
         .doc(botUid)
         .collection("connections")
         .doc(currentUser)
         .set({"unread": "count", "botid": currentUser});
+    FirebaseFirestore.instance
+        .collection("users")
+        .doc(botUid)
+        .collection("sendRequest")
+        .doc(currentUser)
+        .delete();
     log("connection done");
+  }
+
+  //remove request
+  Future removeRequest(String botUid) async {
+    final String currentUser = FirebaseAuth.instance.currentUser!.uid;
+    // currrent user side
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(currentUser)
+        .collection("sendRequest")
+        .doc(botUid)
+        .delete();
+    //other user side
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(botUid)
+        .collection("request")
+        .doc(currentUser)
+        .delete();
+    log("function remove request done");
+  }
+
+  //decline req
+  Future diclineRequest(String botUid) async {
+    final String currentUser = FirebaseAuth.instance.currentUser!.uid;
+    // currrent user side
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(currentUser)
+        .collection("request")
+        .doc(botUid)
+        .delete();
+    //other user side
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(botUid)
+        .collection("sendRequest")
+        .doc(currentUser)
+        .delete();
+    log("function remove request done");
   }
 
   Future unReadCount() async {

@@ -21,9 +21,9 @@ InputDecoration textFormFieldStyle(String? hint) {
 
 //textfield style
 //searchbar(home)
-InputDecoration searchBarStyle() {
+InputDecoration searchBarStyle({String? hint}) {
   return InputDecoration(
-      hintText: "      search chat or username",
+      hintText: hint,
       filled: true,
       hintStyle: GoogleFonts.poppins(
           color: colorSearchBartext.withOpacity(

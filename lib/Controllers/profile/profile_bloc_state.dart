@@ -15,7 +15,7 @@ class LoadingState extends ProfileBlocState {
 }
 
 class LoadCurrentUserState extends ProfileBlocState {
-  final Bot currentUser;
+  final Profile currentUser;
 
   const LoadCurrentUserState({required this.currentUser});
 

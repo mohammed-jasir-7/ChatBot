@@ -30,7 +30,7 @@ class ProfileImage extends StatelessWidget {
           },
           builder: (context, state) {
             if (state is LoadCurrentUserState) {
-              log("vvvvvvvvvvvvvvvvvvvvvvvvvvv settings ${(state.props.first as Bot).email}");
+              log("vvvvvvvvvvvvvvvvvvvvvvvvvvv settings ${(state.props.first as Profile).email}");
               return CircleAvatar(
                 radius: 80,
                 backgroundImage: state.currentUser.photo == null

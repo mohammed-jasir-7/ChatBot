@@ -16,7 +16,7 @@ part 'profile_bloc_state.dart';
 class ProfileBlocBloc extends Bloc<ProfileBlocEvent, ProfileBlocState> {
   final ProfileService profileService;
   final uid = FirebaseAuth.instance.currentUser!.uid;
-  Bot? user;
+  Profile? user;
   ProfileBlocBloc({required this.profileService})
       : super(ProfileBlocInitial()) {
     on<LoadingProfileEvent>(
@@ -27,7 +27,7 @@ class ProfileBlocBloc extends Bloc<ProfileBlocEvent, ProfileBlocState> {
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .get();
 
-        user = Bot(
+        user = Profile(
             uid: FirebaseAuth.instance.currentUser!.uid,
             email: currentUser.get("email"),
             photo: currentUser.get("photo"),
@@ -55,7 +55,7 @@ class ProfileBlocBloc extends Bloc<ProfileBlocEvent, ProfileBlocState> {
           .snapshots()
           .listen((event) {
         log(event.get("photo"));
-        user = Bot(
+        user = Profile(
             uid: uid,
             email: event.get("email"),
             photo: event.get("photo"),

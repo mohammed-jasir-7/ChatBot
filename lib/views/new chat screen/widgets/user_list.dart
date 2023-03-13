@@ -1,9 +1,13 @@
 import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../../../Controllers/chat bloc/chat_bloc.dart';
 import '../../../Controllers/search bloc/search_bloc.dart';
+
+import '../../../Controllers/users bloc/users_bloc.dart';
 import '../../../Models/user_model.dart';
 import '../../../util.dart';
 import '../../common/widgets/custom_text.dart';
@@ -45,11 +49,11 @@ class _UsersListInContactState extends State<UsersListInContact> {
             controller: _textEditingcontroller,
             textAlign: TextAlign.start,
             style: GoogleFonts.poppins(color: colorSearchBartext),
-            decoration: searchBarStyle(),
+            decoration: searchBarStyle(hint: "      search chat or username"),
             onChanged: (value) async {
               setState(() {
                 result = widget.users
-                    .where((element) => element.email.contains(value))
+                    .where((element) => element.username!.contains(value))
                     .toList();
                 log(widget.users.length.toString());
               });
@@ -99,29 +103,7 @@ class _UsersListInContactState extends State<UsersListInContact> {
 
                       ///connection button
                       trailing: widget.iscontactScreen
-                          ? SizedBox(
-                              height: 25,
-                              child: BlocBuilder<ChatBloc, ChatState>(
-                                builder: (context, state) {
-                                  if (state is PendingState) {
-                                    return ElevatedButton(
-                                        onPressed: () {},
-                                        child: const CustomText(
-                                          content: "pending",
-                                          colour: colorlogo,
-                                          size: 10,
-                                        ));
-                                  }
-                                  return ElevatedButton(
-                                      onPressed: () {},
-                                      child: const CustomText(
-                                        content: "Connect",
-                                        colour: colorlogo,
-                                        size: 10,
-                                      ));
-                                },
-                              ),
-                            )
+                          ? requestButton(index)
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: const [
@@ -154,5 +136,99 @@ class _UsersListInContactState extends State<UsersListInContact> {
         ),
       ],
     );
+  }
+
+  Widget requestButton(int index) {
+    if (result[index].state == BotsState.request) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 30,
+            child: IconButton(
+              icon: const Icon(
+                Icons.close,
+                color: errorColor,
+              ),
+              onPressed: () {
+                context
+                    .read<UsersBloc>()
+                    .add(DeclineRequestevent(botId: result[index].uid));
+                setState(() {
+                  result[index].state = BotsState.connect;
+                });
+              },
+            ),
+          ),
+          SizedBox(
+            width: 30,
+            child: IconButton(
+              icon: const Icon(
+                Icons.check,
+                color: successColor,
+              ),
+              onPressed: () {
+                context
+                    .read<UsersBloc>()
+                    .add(AcceptRequestEvent(botId: result[index].uid));
+                setState(() {
+                  result[index].state = BotsState.connected;
+                });
+              },
+            ),
+          ),
+        ],
+      );
+    } else if (result[index].state == BotsState.connected) {
+      return SizedBox(
+        height: 25,
+        child: ElevatedButton(
+            style: const ButtonStyle(
+                backgroundColor: MaterialStatePropertyAll(successColor)),
+            onPressed: () {},
+            child: const CustomText(
+              content: "connected",
+              colour: colorMessageClientTextWhite,
+              size: 10,
+            )),
+      );
+    } else if (result[index].state == BotsState.connect) {
+      return SizedBox(
+        height: 25,
+        child: ElevatedButton(
+            onPressed: () {
+              context
+                  .read<UsersBloc>()
+                  .add(SendRequestEvent(botId: result[index].uid));
+              setState(() {
+                result[index].state = BotsState.pending;
+              });
+            },
+            child: const CustomText(
+              content: "request",
+              colour: colorlogo,
+              size: 10,
+            )),
+      );
+    } else {
+      return SizedBox(
+        height: 25,
+        child: ElevatedButton(
+            onPressed: () {
+              if (result[index].state == BotsState.pending) {
+                context
+                    .read<UsersBloc>()
+                    .add(RemoveRequestEvent(botId: result[index].uid));
+                setState(() {
+                  result[index].state = BotsState.connect;
+                });
+              }
+            },
+            child: const CustomText(
+              content: "Pending",
+              size: 10,
+            )),
+      );
+    }
   }
 }

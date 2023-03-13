@@ -46,18 +46,3 @@ class OfflineState extends ChatState {
   @override
   List<Object?> get props => [];
 }
-
-class RequestState extends ChatState {
-  @override
-  List<Object?> get props => [];
-}
-
-class PendingState extends ChatState {
-  @override
-  List<Object?> get props => [];
-}
-
-class AcceptedState extends ChatState {
-  @override
-  List<Object?> get props => [];
-}

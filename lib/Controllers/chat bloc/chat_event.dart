@@ -38,17 +38,3 @@ class OfflineEvent extends ChatEvent {
   @override
   List<Object?> get props => [];
 }
-
-/// send req event
-class SendRequestEvent extends ChatEvent {
-  final String botId;
-
-  const SendRequestEvent({required this.botId});
-  @override
-  List<Object?> get props => [];
-}
-
-class RemoveRequestEvent extends ChatEvent {
-  @override
-  List<Object?> get props => [];
-}

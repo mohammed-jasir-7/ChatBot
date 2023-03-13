@@ -15,7 +15,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     /// and check user is online or not and live ithe chat
     on<EnterToChatEvent>((event, emit) async {
       String roomID = await chatService.onCreateRoomId(event.bot.uid);
-      await chatService.connnections(event.bot.uid);
 
       emit(LoadingState());
 
@@ -46,10 +45,5 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       chatService.onMessaging(message: event.messages, roomID: event.roomID);
     });
     //request event
-    on<SendRequestEvent>((event, emit) async {
-      await chatService
-          .sendRequest(event.botId)
-          .then((value) => emit(PendingState()));
-    });
   }
 }

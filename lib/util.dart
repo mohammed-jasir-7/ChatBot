@@ -16,6 +16,8 @@ const Color colorMessageClientText = Color.fromARGB(255, 39, 39, 39);
 const Color colorMessageClientTextWhite = Color.fromARGB(255, 255, 255, 255);
 const Color iconColorGreen = Color.fromARGB(255, 114, 222, 170);
 const Color errorColor = Colors.red;
+const Color closeIconColor = Colors.red;
+const Color successColor = Colors.green;
 
 //sized box gap
 Widget sizeHeight15 = const SizedBox(
@@ -37,3 +39,5 @@ void showTopNotification(
     ),
   );
 }
+
+enum BotsState { request, connected, connect, pending }

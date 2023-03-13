@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../Service/search/search_user.dart';
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
@@ -46,11 +45,12 @@ class AuthenticationBloc
       FirebaseFirestore _firestire = FirebaseFirestore.instance;
       if (user!.additionalUserInfo!.isNewUser == true) {
         _firestire.collection("users").doc(user!.user?.uid).set({
+          "userId": user?.user?.uid,
           "photo": user!.additionalUserInfo!.profile!['picture'],
           "email": user!.user!.email
         });
         log("new user");
-        emit(UsernameState());
+        emit(const UsernameState());
       }
       //=================================
       log("verified event");
