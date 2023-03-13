@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../Service/chat/chat_service.dart';
 
@@ -17,37 +18,36 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
     List<Bot> allUser = [];
     final chatService = ChatService();
     on<UsersListEvent>((event, emit) async {
-      log("userlist event");
       emit(LoadingState());
 
-      final request = await FirebaseFirestore.instance
+      final request = FirebaseFirestore.instance
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("request")
-          .get();
-      final sendRequest = await FirebaseFirestore.instance
+          .snapshots();
+      final sendRequest = FirebaseFirestore.instance
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("sendRequest")
-          .get();
-      final connections = await FirebaseFirestore.instance
+          .snapshots();
+      final connections = FirebaseFirestore.instance
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("connections")
-          .get();
-      log("   ${request.docs}");
-      FirebaseFirestore.instance
-          .collection("users")
-          .snapshots()
-          .listen((event) {
+          .snapshots();
+      final users = FirebaseFirestore.instance.collection("users").snapshots();
+
+      CombineLatestStream.list([request, sendRequest, connections, users])
+          .listen((value) {
         List<Bot> temp = [];
-        for (var element in event.docs) {
+        for (var element in value[3].docs) {
+          log("heloooooooooooooooooo ${value[1].docs}");
           int flag = 0;
           if (FirebaseAuth.instance.currentUser?.uid !=
               element.data()["userId"]) {
-            if (request.docs.isNotEmpty) {
+            if (value[0].docs.isNotEmpty) {
               //checking  user in request list
-              for (var req in request.docs) {
+              for (var req in value[0].docs) {
                 log("entered all user itration ${req.data()["userId"]}");
                 if (element.data()["userId"] == req.data()["userId"]) {
                   log("enterddd at req ${element.data()["userId"]}");
@@ -68,8 +68,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
               continue;
             }
             //checking user in send request or not
-            if (sendRequest.docs.isNotEmpty) {
-              for (var sended in sendRequest.docs) {
+            if (value[1].docs.isNotEmpty) {
+              for (var sended in value[1].docs) {
                 if (element.data()["userId"] == sended.data()["userId"]) {
                   temp.add(Bot(
                       uid: element.data()["userId"],
@@ -87,8 +87,8 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
             if (flag == 1) {
               continue;
             }
-            if (connections.docs.isNotEmpty) {
-              for (var connection in connections.docs) {
+            if (value[2].docs.isNotEmpty) {
+              for (var connection in value[2].docs) {
                 if (element.data()["userId"] == connection.data()["botid"]) {
                   temp.add(Bot(
                       uid: element.data()["userId"],

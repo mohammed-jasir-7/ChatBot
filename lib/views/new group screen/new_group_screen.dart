@@ -2,24 +2,20 @@ import 'dart:developer';
 
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
+import 'package:chatbot/views/new%20group%20screen/widgets/group+member_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import '../../Models/select_model.dart';
 import '../../Models/user_model.dart';
 import '../common/widgets/textformcommon_style.dart';
-
-class SelectModel {
-  bool isselected = false;
-  final Bot bot;
-
-  SelectModel({required this.bot, this.isselected = false});
-}
+import '../new group name screen/name_screen.dart';
 
 ValueNotifier<List<SelectModel>> selectedBots = ValueNotifier([]);
-ValueNotifier<List<SelectModel>> Bots = ValueNotifier([]);
+ValueNotifier<List<SelectModel>> bots = ValueNotifier([]);
+ValueNotifier<bool> isVisibleNavigation = ValueNotifier(false);
 
 class NewGroupScreen extends StatefulWidget {
-  NewGroupScreen({super.key, required this.connections});
+  const NewGroupScreen({super.key, required this.connections});
   final List<Bot> connections;
 
   @override
@@ -30,20 +26,36 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   final _textEditingController = TextEditingController();
   @override
   void initState() {
-    Bots.value = widget.connections
+    selectedBots.value.clear();
+    bots.value = widget.connections
         .map((e) => SelectModel(bot: e))
         .cast<SelectModel>()
         .toList();
     log(selectedBots.value.length.toString());
-    searchresult = Bots.value;
+    searchresult = bots.value;
     super.initState();
   }
 
   List<SelectModel> searchresult = [];
+  @override
+  void dispose() {
+    selectedBots.value.clear();
+    log("disposed");
+    isVisibleNavigation.value = false;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
+      floatingActionButton: ValueListenableBuilder(
+        valueListenable: isVisibleNavigation,
+        builder: (context, value, child) => Visibility(
+          visible: isVisibleNavigation.value,
+          child: const FloatingNavigationButton(),
+        ),
+      ),
       backgroundColor: backroundColor,
       appBar: AppBar(
         backgroundColor: backroundColor,
@@ -54,32 +66,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
       ),
       body: Column(
         children: [
-          ValueListenableBuilder(
-            valueListenable: selectedBots,
-            builder: (context, selected, child) => selected.isNotEmpty
-                ? Container(
-                    height: 70,
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) =>
-                                  GroupMembersIcon(bot: selected[index]),
-                              itemCount: selected.length,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ),
+          const SelectedTiles(),
           SizedBox(
             width: 300,
             height: 30,
@@ -92,9 +79,10 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
               decoration: searchBarStyle(hint: "search friends"),
               onChanged: (value) async {
                 setState(() {
-                  searchresult = selectedBots.value
+                  searchresult = bots.value
                       .where((element) => element.bot.username!.contains(value))
                       .toList();
+                  log("length   ${searchresult.length}");
                 });
               },
             ),
@@ -121,24 +109,38 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
 
                     selectedBots.notifyListeners();
                     setState(() {});
+                    //visiblility
+                    if (selectedBots.value.length > 0) {
+                      isVisibleNavigation.value = true;
+                      isVisibleNavigation.notifyListeners();
+                    } else {
+                      isVisibleNavigation.value = false;
+                      isVisibleNavigation.notifyListeners();
+                    }
                   },
-                  child: ListTile(
-                    trailing: searchresult[index].isselected
-                        ? Icon(Icons.check)
-                        : null,
-                    leading: CircleAvatar(
-                      backgroundColor: colorWhite,
-                      radius: 20,
-                      backgroundImage: NetworkImage(
-                          widget.connections[index].photo ??
-                              "assets/images/nullPhoto.jpeg"),
-                    ),
+                  child: ValueListenableBuilder(
+                    valueListenable: selectedBots,
+                    builder: (context, value, child) => ListTile(
+                      trailing: searchresult[index].isselected
+                          ? const Icon(
+                              Icons.check,
+                              color: successColor,
+                            )
+                          : null,
+                      leading: CircleAvatar(
+                        backgroundColor: colorWhite,
+                        radius: 20,
+                        backgroundImage: NetworkImage(
+                            searchresult[index].bot.photo ??
+                                "assets/images/nullPhoto.jpeg"),
+                      ),
 
-                    ///connection button
+                      ///connection button
 
-                    title: CustomText(
-                      content: widget.connections[index].username ?? "",
-                      colour: colorWhite,
+                      title: CustomText(
+                        content: searchresult[index].bot.username ?? "",
+                        colour: colorWhite,
+                      ),
                     ),
                   ),
                 );
@@ -151,49 +153,65 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   }
 }
 
-class GroupMembersIcon extends StatelessWidget {
-  const GroupMembersIcon({
+class FloatingNavigationButton extends StatelessWidget {
+  const FloatingNavigationButton({
     super.key,
-    required this.bot,
   });
-  final SelectModel bot;
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          constraints: const BoxConstraints(minWidth: 80, minHeight: 50),
-          child: Column(
-            children: [
-              CircleAvatar(
-                backgroundImage: bot.bot.photo == null
-                    ? AssetImage("assets/images/nullPhoto.jpeg")
-                        as ImageProvider
-                    : NetworkImage(bot.bot.photo ?? ""),
-              ),
-              Container(
-                  constraints:
-                      const BoxConstraints(maxWidth: 60, maxHeight: 20),
-                  child: CustomText(
-                    content: bot.bot.username ?? "",
-                    colour: colorWhite,
-                    size: 10,
-                  ))
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.only(top: 50),
+      child: FloatingActionButton(
+        mini: true,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    NameScreen(seletedBots: selectedBots.value),
+              ));
+        },
+        child: const Icon(
+          Icons.arrow_forward,
         ),
-        Positioned(
-            top: -18,
-            left: 30,
-            child: IconButton(
-                onPressed: () {},
-                icon: const Icon(
-                  Icons.close,
-                  color: closeIconColor,
-                  size: 15,
-                )))
-      ],
+      ),
+    );
+  }
+}
+
+class SelectedTiles extends StatelessWidget {
+  const SelectedTiles({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: selectedBots,
+      builder: (context, selected, child) => selected.isNotEmpty
+          ? Container(
+              height: 70,
+              alignment: Alignment.center,
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) =>
+                            GroupMembersIcon(bot: selected[index]),
+                        itemCount: selected.length,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }

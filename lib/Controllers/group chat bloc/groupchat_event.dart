@@ -6,3 +6,9 @@ abstract class GroupchatEvent extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class CreateGroup extends GroupchatBloc {
+  final List<String> botsId;
+
+  CreateGroup({required this.botsId});
+}
