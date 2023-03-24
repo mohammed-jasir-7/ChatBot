@@ -35,7 +35,6 @@ class _UsersListInContactState extends State<UsersListInContact> {
 
   @override
   Widget build(BuildContext context) {
-    log("child building");
     return Column(
       children: [
         SizedBox(
@@ -55,7 +54,6 @@ class _UsersListInContactState extends State<UsersListInContact> {
                 result = widget.users
                     .where((element) => element.username!.contains(value))
                     .toList();
-                log(widget.users.length.toString());
               });
 
               context.read<SearchBloc>().add(SearchingEvent(query: value));

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:chatbot/Controllers/group%20chat%20bloc/group_bloc.dart';
 import 'package:chatbot/Controllers/profile/profile_bloc_bloc.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/onBoard%20Screen/first_screen.dart';
@@ -61,6 +62,8 @@ Future authCheck(
   if (context.mounted) {
     if (user != null) {
       context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
+      context.read<GroupBloc>().add(FetchGroupsEvent());
+
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(

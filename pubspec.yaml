@@ -53,6 +53,9 @@ dependencies:
   firebase_storage: ^11.0.14
   uuid: ^3.0.7
   rxdart: ^0.27.7
+  get_it: ^7.2.0
+  injectable: ^2.1.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +69,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   build_runner: ^2.3.3
   json_serializable: ^6.6.1
+  injectable_generator: ^2.1.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

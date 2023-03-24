@@ -26,6 +26,8 @@ Widget sizeHeight15 = const SizedBox(
 Widget sizeWidth20 = const SizedBox(
   width: 20,
 );
+//null image
+const String nullPhoto = "assets/images/nullPhoto.jpeg";
 // notification
 void showTopNotification(
     {required BuildContext context,

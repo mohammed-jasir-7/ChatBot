@@ -4,7 +4,9 @@ import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:chatbot/views/new%20group%20screen/widgets/group+member_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../Controllers/group functionality/group_functionality_bloc.dart';
 import '../../Models/select_model.dart';
 import '../../Models/user_model.dart';
 import '../common/widgets/textformcommon_style.dart';
@@ -15,8 +17,16 @@ ValueNotifier<List<SelectModel>> bots = ValueNotifier([]);
 ValueNotifier<bool> isVisibleNavigation = ValueNotifier(false);
 
 class NewGroupScreen extends StatefulWidget {
-  const NewGroupScreen({super.key, required this.connections});
+  NewGroupScreen(
+      {super.key,
+      required this.connections,
+      required this.isAddMemberScreen,
+      this.groupId,
+      this.gName});
   final List<Bot> connections;
+  final bool isAddMemberScreen;
+  String? groupId;
+  String? gName;
 
   @override
   State<NewGroupScreen> createState() => _NewGroupScreenState();
@@ -26,6 +36,13 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   final _textEditingController = TextEditingController();
   @override
   void initState() {
+    if (widget.isAddMemberScreen) {
+      if (widget.groupId != null) {
+        context
+            .read<GroupFunctionalityBloc>()
+            .add(AddMembersEvent(groupId: widget.groupId!));
+      }
+    }
     selectedBots.value.clear();
     bots.value = widget.connections
         .map((e) => SelectModel(bot: e))
@@ -39,6 +56,11 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   List<SelectModel> searchresult = [];
   @override
   void dispose() {
+    if (widget.isAddMemberScreen) {
+      context
+          .read<GroupFunctionalityBloc>()
+          .add(FetchMembersEvent(groupId: widget.groupId!));
+    }
     selectedBots.value.clear();
     log("disposed");
     isVisibleNavigation.value = false;
@@ -53,15 +75,53 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
         valueListenable: isVisibleNavigation,
         builder: (context, value, child) => Visibility(
           visible: isVisibleNavigation.value,
-          child: const FloatingNavigationButton(),
+          child: FloatingNavigationButton(
+              isAddScreen: widget.isAddMemberScreen,
+              gName: widget.gName,
+              groupId: widget.groupId),
         ),
       ),
       backgroundColor: backroundColor,
       appBar: AppBar(
         backgroundColor: backroundColor,
-        title: const CustomText(
-          content: "new group",
-          colour: colorWhite,
+        title: BlocBuilder<GroupFunctionalityBloc, GroupFunctionalityState>(
+          builder: (context, state) {
+            if (!widget.isAddMemberScreen) {
+              return const CustomText(
+                content: "new group",
+                colour: colorWhite,
+              );
+            } else if (state is ProvideUserListState) {
+              if (!state.isLoading) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  bots.value = state.user ?? [];
+                  setState(() {
+                    searchresult = state.user ?? [];
+                  });
+                });
+
+                bots.notifyListeners();
+                const CustomText(
+                  content: "Add Members",
+                  colour: colorWhite,
+                );
+              } else {
+                return const CustomText(
+                  content: "Add Members",
+                  colour: colorWhite,
+                );
+              }
+            } else {
+              return const CustomText(
+                content: "Add Members",
+                colour: colorWhite,
+              );
+            }
+            return const CustomText(
+              content: "Add Members",
+              colour: colorWhite,
+            );
+          },
         ),
       ),
       body: Column(
@@ -153,10 +213,15 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   }
 }
 
+///floating action button
+///here is function work
+///
 class FloatingNavigationButton extends StatelessWidget {
-  const FloatingNavigationButton({
-    super.key,
-  });
+  FloatingNavigationButton(
+      {super.key, required this.isAddScreen, this.gName, this.groupId});
+  final bool isAddScreen;
+  String? groupId;
+  String? gName;
 
   @override
   Widget build(BuildContext context) {
@@ -165,16 +230,29 @@ class FloatingNavigationButton extends StatelessWidget {
       child: FloatingActionButton(
         mini: true,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    NameScreen(seletedBots: selectedBots.value),
-              ));
+          log("floating button");
+          if (isAddScreen) {
+            if (gName != null && groupId != null) {
+              log("floating addscreen");
+              context.read<GroupFunctionalityBloc>().add(AddMembersToDbEvent(
+                  selectedBots: selectedBots.value,
+                  groupId: groupId!,
+                  gName: gName!));
+            }
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NameScreen(seletedBots: selectedBots.value),
+                ));
+          }
         },
-        child: const Icon(
-          Icons.arrow_forward,
-        ),
+        child: isAddScreen
+            ? const Icon(Icons.check)
+            : const Icon(
+                Icons.arrow_forward,
+              ),
       ),
     );
   }

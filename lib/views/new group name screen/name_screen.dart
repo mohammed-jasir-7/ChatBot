@@ -1,10 +1,15 @@
 import 'dart:developer';
-
+import 'dart:io';
+import 'package:chatbot/Controllers/group%20chat%20bloc/group_bloc.dart';
 import 'package:chatbot/Models/select_model.dart';
+import 'package:chatbot/Service/profile%20service/profile_service.dart';
+import 'package:chatbot/injectable.dart';
+import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:chatbot/views/new%20group%20screen/widgets/group+member_icon.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../util.dart';
 import '../common/widgets/custom_text.dart';
 import '../common/widgets/textformcommon_style.dart';
@@ -14,13 +19,19 @@ final textController = TextEditingController();
 class NameScreen extends StatelessWidget {
   NameScreen({super.key, required this.seletedBots});
   final List<SelectModel> seletedBots;
-
+  final ValueNotifier<FilePickerResult?> imagePath = ValueNotifier(null);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
-      floatingActionButton: FloatingButton(text: textController.text),
+      floatingActionButton: ValueListenableBuilder(
+        valueListenable: imagePath,
+        builder: (context, value, child) => FloatingButton(
+            text: textController.text,
+            selectedBots: seletedBots,
+            imagePath: imagePath.value),
+      ),
       backgroundColor: backroundColor,
       appBar: AppBar(
         backgroundColor: backroundColor,
@@ -33,7 +44,38 @@ class NameScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
-            Container(
+            Stack(
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: ValueListenableBuilder(
+                    valueListenable: imagePath,
+                    builder: (context, value, child) => CircleAvatar(
+                      backgroundImage: imagePath.value == null ||
+                              imagePath.value!.paths[0] == null
+                          ? const AssetImage(nullPhoto)
+                          : FileImage(File(imagePath.value!.paths[0] ?? ""))
+                              as ImageProvider,
+                    ),
+                  ),
+                ),
+                Positioned.fill(
+                    child: IconButton(
+                        onPressed: () async {
+                          imagePath.value =
+                              await getIt<ProfileService>().selectImage();
+                        },
+                        icon: const Icon(
+                          Icons.camera_enhance,
+                          size: 40,
+                        ))),
+              ],
+            ),
+            sizeHeight15,
+            SizedBox(
+              width: 200,
+              height: 40,
               child: TextField(
                 controller: textController,
                 style: GoogleFonts.poppins(color: colorWhite),
@@ -49,7 +91,7 @@ class NameScreen extends StatelessWidget {
             Expanded(
               child: GridView.builder(
                 itemCount: seletedBots.length,
-                gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 100,
                     childAspectRatio: 1 / 1,
                     crossAxisSpacing: 0,
@@ -66,11 +108,14 @@ class NameScreen extends StatelessWidget {
 }
 
 class FloatingButton extends StatefulWidget {
-  const FloatingButton({
-    super.key,
-    required this.text,
-  });
+  FloatingButton(
+      {super.key,
+      required this.text,
+      required this.selectedBots,
+      this.imagePath});
   final String text;
+  final List<SelectModel> selectedBots;
+  FilePickerResult? imagePath;
 
   @override
   State<FloatingButton> createState() => _FloatingButtonState();
@@ -78,27 +123,56 @@ class FloatingButton extends StatefulWidget {
 
 class _FloatingButtonState extends State<FloatingButton> {
   Color buttoncolor = successColor;
+  @override
+  void dispose() {
+    log("disposseddd");
+
+    textController.clear();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      backgroundColor: buttoncolor,
-      onPressed: () {
-        log("gggggggggggggggg ${widget.text}");
-        if (textController.text.isEmpty) {
-          setState(() {
-            buttoncolor = errorColor;
-          });
-        } else {
-          setState(() {
-            buttoncolor = successColor;
-          });
-        }
-      },
-      child: Icon(
-        Icons.check,
-        color: colorMessageClientTextWhite,
-      ),
-    );
+        backgroundColor: buttoncolor,
+        onPressed: () {
+          if (textController.text.isEmpty) {
+            setState(() {
+              buttoncolor = errorColor;
+            });
+          } else {
+            context.read<GroupBloc>().add(CreateGroupEvent(
+                botsId: widget.selectedBots,
+                name: textController.text,
+                image: widget.imagePath));
+            setState(() {
+              buttoncolor = successColor;
+            });
+          }
+        },
+        child: BlocConsumer<GroupBloc, GroupState>(
+          listener: (context, state) {
+            if (state is SuccessState) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                  (route) => false);
+            }
+          },
+          builder: (context, state) {
+            if (state is LoadingState) {
+              return const CircularProgressIndicator(
+                color: colorMessageClientTextWhite,
+              );
+            } else {
+              return const Icon(
+                Icons.check,
+                color: colorMessageClientTextWhite,
+              );
+            }
+          },
+        ));
   }
 }

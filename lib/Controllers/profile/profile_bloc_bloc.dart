@@ -7,12 +7,14 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../Models/user_model.dart';
 
 part 'profile_bloc_event.dart';
 part 'profile_bloc_state.dart';
 
+@Injectable()
 class ProfileBlocBloc extends Bloc<ProfileBlocEvent, ProfileBlocState> {
   final ProfileService profileService;
   final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -43,7 +45,8 @@ class ProfileBlocBloc extends Bloc<ProfileBlocEvent, ProfileBlocState> {
       ///upload image its return boo;
       emit(LoadingState());
       final result = await profileService.selectImage();
-      final isUploaded = await profileService.uploadFile(result);
+      final isUploaded =
+          await profileService.uploadFile(result, uid, "users", null);
       if (isUploaded == null) {
         emit(UpdateSuccessState());
       } else {

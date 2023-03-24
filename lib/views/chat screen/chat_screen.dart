@@ -1,10 +1,13 @@
 import 'dart:developer';
+import 'package:chatbot/Controllers/group%20chat%20bloc/group_bloc.dart';
 import 'package:chatbot/Models/user_model.dart';
+import 'package:chatbot/views/chat%20screen/widget/group_list.dart';
 import 'package:chatbot/views/new%20chat%20screen/widgets/user_list.dart';
 import 'package:chatbot/views/new%20group%20screen/new_group_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../util.dart';
 import '../common/widgets/custom_text.dart';
 
@@ -17,6 +20,7 @@ class ChatScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log("chat screeen");
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -36,12 +40,13 @@ class ChatScreen extends StatelessWidget {
                           MaterialPageRoute(
                             builder: (context) => NewGroupScreen(
                               connections: connections,
+                              isAddMemberScreen: false,
                             ),
                           ));
                     },
-                    child: Icon(Icons.group_add),
+                    child: const Icon(Icons.group_add),
                   )
-                : SizedBox.shrink(),
+                : const SizedBox.shrink(),
           ),
         ),
         appBar: AppBar(
@@ -52,7 +57,6 @@ class ChatScreen extends StatelessWidget {
                 } else {
                   isVisible.value = false;
                 }
-                log(value.toString());
               },
               unselectedLabelColor: colorWhite.withOpacity(0.5),
               isScrollable: true,
@@ -61,12 +65,12 @@ class ChatScreen extends StatelessWidget {
               dividerColor: Colors.transparent,
               indicatorColor: Colors.transparent,
               tabs: [
-                Container(child: Tab(child: CustomText(content: "Friends"))),
+                const Tab(child: CustomText(content: "Friends")),
                 Tab(
                   child: Container(
-                    constraints: BoxConstraints(minWidth: 50),
+                    constraints: const BoxConstraints(minWidth: 50),
                     child: Row(
-                      children: [
+                      children: const [
                         CustomText(content: "Groups"),
                       ],
                     ),
@@ -89,8 +93,6 @@ class ChatScreen extends StatelessWidget {
                 stream:
                     FirebaseFirestore.instance.collection('users').snapshots(),
                 builder: (context, snapshot) {
-                  log("Strream building");
-
                   if (snapshot.hasData) {
                     users.clear();
                     for (var element in snapshot.data!.docs) {
@@ -98,9 +100,9 @@ class ChatScreen extends StatelessWidget {
                           element.reference.id) {
                         users.add(Bot(
                             uid: element.reference.id,
-                            email: element.get('email'),
-                            username: element.get('userName') ?? "",
-                            photo: element.get('photo'),
+                            email: element.data()["email"],
+                            username: element.data()["userName"] ?? "",
+                            photo: element.data()["photo"],
                             state: BotsState.connect));
                       }
                     }
@@ -117,31 +119,29 @@ class ChatScreen extends StatelessWidget {
                             for (var connection in snapshot.data!.docs) {
                               for (var bot in users) {
                                 if (bot.uid == connection.get('botid')) {
-                                  log("message${bot.uid}");
                                   connections.add(bot);
                                 }
                               }
                             }
-                            log("connectios length ${connections.length}");
+
+                            //tabar view
                             return TabBarView(
                               children: [
                                 UsersListInContact(
                                   users: connections,
                                   iscontactScreen: false,
                                 ),
-                                UsersListInContact(
-                                  users: connections,
-                                  iscontactScreen: false,
-                                ),
+                                GroupList()
                               ],
                             );
                           }
 
-                          return Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         });
                   }
 
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }),
           ),
         ),

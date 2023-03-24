@@ -5,6 +5,7 @@ import '../../../util.dart';
 //login
 InputDecoration textFormFieldStyle(String? hint) {
   return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       hintText: hint,
       hintStyle: GoogleFonts.poppins(color: colorWhite),
       focusedBorder: const OutlineInputBorder(

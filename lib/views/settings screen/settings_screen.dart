@@ -1,3 +1,7 @@
+import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
+import 'package:chatbot/Controllers/gchat%20bloc/gchat_bloc.dart';
+import 'package:chatbot/Controllers/group%20chat%20bloc/group_bloc.dart';
+import 'package:chatbot/Controllers/group%20functionality/group_functionality_bloc.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:chatbot/views/settings%20screen/widgets/profile_image.dart';
@@ -6,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import '../../Controllers/authentication/authentication_bloc.dart';
 import '../../Controllers/profile/profile_bloc_bloc.dart';
 import '../splash Screen/splash_screen.dart';
 
@@ -56,9 +61,16 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () async {
+                      // context.read<GroupBloc>().close();
+
+                      // context.read<ChatBloc>().close();
+                      // context.read<GroupFunctionalityBloc>().close();
+                      // context.read<GchatBloc>().close();
+
                       await FirebaseAuth.instance.signOut();
 
                       final gg = GoogleSignIn();
+
                       gg.disconnect();
                       FirebaseFirestore.instance.clearPersistence();
                       if (context.mounted) {
