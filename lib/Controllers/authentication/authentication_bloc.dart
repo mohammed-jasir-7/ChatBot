@@ -104,5 +104,9 @@ class AuthenticationBloc
         add(LoadLoginScreenEvent());
       }
     });
+
+    //Initial event
+    on<AuthenticationInitialEvent>(
+        (event, emit) => emit(AuthenticationInitial()));
   }
 }

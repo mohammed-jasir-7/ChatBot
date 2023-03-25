@@ -29,3 +29,7 @@ class ProvideUserListState extends GroupFunctionalityState {
   @override
   List<Object?> get props => [isLoading, user];
 }
+
+class ExitedGroup extends GroupFunctionalityState {}
+
+class DismissState extends GroupFunctionalityState {}

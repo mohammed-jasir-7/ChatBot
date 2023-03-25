@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:sticky_headers/sticky_headers/widget.dart';
 import '../../Controllers/gchat bloc/gchat_bloc.dart';
 import '../../Models/group_model.dart';
 import '../../util.dart';
@@ -70,11 +72,25 @@ class GroupChatScreen extends StatelessWidget {
                                 reverse: true,
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
-                                  return GroupMessage(
-                                    message: state.allmessages[index],
-                                    uID: currentUser,
-                                    currentUsername: state.currentUsername,
-                                  );
+                                  String previousDate =
+                                      index < state.allmessages.length - 1
+                                          ? DateFormat.yMMMMEEEEd().format(
+                                              DateTime.parse(state
+                                                  .allmessages[index + 1].time))
+                                          : "";
+
+                                  String date = DateFormat.yMMMMEEEEd().format(
+                                      DateTime.parse(
+                                          state.allmessages[index].time));
+                                  log("$date kkk $previousDate");
+                                  return previousDate != date
+                                      ? dateDivider(state, index, currentUser)
+                                      : GroupMessage(
+                                          message: state.allmessages[index],
+                                          uID: currentUser,
+                                          currentUsername:
+                                              state.currentUsername,
+                                        );
                                 },
                                 itemCount: state.allmessages.length,
                               )
@@ -120,6 +136,48 @@ class GroupChatScreen extends StatelessWidget {
             ),
           ]),
         ),
+      ),
+    );
+  }
+
+  StickyHeaderBuilder dateDivider(
+      AllMessageState state, int index, String currentUser) {
+    return StickyHeaderBuilder(
+      builder: (context, stuckAmount) {
+        String dateofChat = state.allmessages[index].time;
+        DateTime convertedDate = DateTime.parse(state.allmessages[index].time);
+        if (convertedDate.day == DateTime.now().day &&
+            convertedDate.month == DateTime.now().month &&
+            convertedDate.year == DateTime.now().year) {
+          dateofChat = "Today";
+        } else if (convertedDate.day ==
+                DateTime.now().subtract(Duration(days: 1)).day &&
+            convertedDate.month == DateTime.now().month &&
+            convertedDate.year == DateTime.now().year) {
+          dateofChat = "Yesterday";
+        } else {
+          dateofChat = DateFormat.yMMMMEEEEd().format(convertedDate);
+        }
+
+        return Align(
+          alignment: Alignment.center,
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 13),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(40),
+                color: colorSearchBarFilled),
+            child: CustomText(
+              content: dateofChat,
+              colour: colorMessageClientTextWhite,
+              size: 13,
+            ),
+          ),
+        );
+      },
+      content: GroupMessage(
+        message: state.allmessages[index],
+        uID: currentUser,
+        currentUsername: state.currentUsername,
       ),
     );
   }

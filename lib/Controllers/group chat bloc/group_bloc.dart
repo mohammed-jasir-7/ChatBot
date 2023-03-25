@@ -16,7 +16,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
   StreamSubscription? combinedStram;
   GroupBloc() : super(GroupchatInitial()) {
     final groupChatService = GroupChatService();
-    final currentuser = FirebaseAuth.instance.currentUser!.uid;
+
     List<GroupModel> groups = [];
 
     on<CreateGroupEvent>((event, emit) async {
@@ -40,7 +40,7 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
 
       final usersSide = FirebaseFirestore.instance
           .collection("users")
-          .doc(currentuser)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("groups")
           .snapshots();
       combinedStram = CombineLatestStream.list([groupChat, usersSide])
@@ -75,6 +75,8 @@ class GroupBloc extends Bloc<GroupEvent, GroupState> {
     //==========================================================================================================================
     on<ProvideGroupsEvent>(
         (event, emit) => emit(GroupListState(groups: groups)));
+    //inital event
+    on<GroupInitialEvent>((event, emit) => emit(GroupchatInitial()));
   }
   @override
   Future<void> close() {

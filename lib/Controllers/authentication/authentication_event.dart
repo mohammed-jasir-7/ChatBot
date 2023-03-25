@@ -55,3 +55,9 @@ class LoadingForgotPasswordScreen extends AuthenticationEvent {
   @override
   List<Object?> get props => [];
 }
+
+//class initial event
+class AuthenticationInitialEvent extends AuthenticationEvent {
+  @override
+  List<Object?> get props => [];
+}

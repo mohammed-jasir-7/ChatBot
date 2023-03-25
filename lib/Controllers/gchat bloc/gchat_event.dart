@@ -27,3 +27,6 @@ class ProvideDataToGroupEvent extends GchatEvent {
 
   const ProvideDataToGroupEvent({required this.allmessages, this.currentUser});
 }
+
+//initial
+class GchatInitialEvent extends GchatEvent {}

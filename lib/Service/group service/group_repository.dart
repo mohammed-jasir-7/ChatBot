@@ -1,8 +1,6 @@
 import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:injectable/injectable.dart';
-
 import 'group_service.dart';
 
 @LazySingleton(as: GroupServices)
@@ -12,7 +10,6 @@ class GroupRepository implements GroupServices {
       {required List<String> members,
       required String groupId,
       required String gName}) async {
-    log("start");
     final db = FirebaseFirestore.instance.batch();
     //added in users collection's collection
     for (var member in members) {
@@ -47,7 +44,7 @@ class GroupRepository implements GroupServices {
     } on FirebaseException catch (e) {
       result = e.code;
     }
-    log("trueeee");
+
     return result;
   }
 
@@ -107,25 +104,44 @@ class GroupRepository implements GroupServices {
   }
 
   @override
-  Future exitGroup({required String groupId, required String currentUserId}) {
-    final db = FirebaseFirestore.instance.batch();
-    db.delete(FirebaseFirestore.instance
-        .collection("groupChat")
-        .doc(groupId)
-        .collection("members")
-        .doc(currentUserId));
-    db.delete(FirebaseFirestore.instance
-        .collection("users")
-        .doc(currentUserId)
-        .collection("groups")
-        .doc(groupId));
-    db.commit();
-    throw UnimplementedError();
+  Future exitGroup(
+      {required String groupId, required String currentUserId}) async {
+    try {
+      final db = FirebaseFirestore.instance.batch();
+      db.delete(FirebaseFirestore.instance
+          .collection("groupChat")
+          .doc(groupId)
+          .collection("members")
+          .doc(currentUserId));
+      db.delete(FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUserId)
+          .collection("groups")
+          .doc(groupId));
+      await db.commit();
+    } on FirebaseException catch (e) {
+      return e.code;
+    }
+    return true;
   }
 
   @override
-  Future dismissGroup(
-      {required String groupId, required List<String> currentUserId}) {
-    throw UnimplementedError();
+  Future dismissGroup({required String groupId}) async {
+    final db = FirebaseFirestore.instance.batch();
+    final members = await FirebaseFirestore.instance
+        .collection("groupChat")
+        .doc(groupId)
+        .collection("members")
+        .get();
+    for (var member in members.docs) {
+      db.delete(FirebaseFirestore.instance
+          .collection("users")
+          .doc(member.data()["botId"])
+          .collection("groups")
+          .doc(groupId));
+    }
+    db.delete(FirebaseFirestore.instance.collection("groupChat").doc(groupId));
+
+    await db.commit();
   }
 }

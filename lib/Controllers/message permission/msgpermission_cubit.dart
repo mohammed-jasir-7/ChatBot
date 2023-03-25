@@ -29,21 +29,22 @@ class MsgpermissionCubit extends Cubit<MsgpermissionState> {
         .snapshots();
     combinedStream =
         CombineLatestStream.list([currentMember, groupData]).listen((value) {
-     
-      if (value[1].data()!["adminOnlyMessage"]) {
-        if (value[0].data()!["isAdmin"]) {
+      if (value[1].data() != null) {
+        if (value[1].data()!["adminOnlyMessage"]) {
+          if (value[0].data()!["isAdmin"]) {
+            emit(PermissionState(
+                permission: MsgPermisson.allow,
+                adminOnly: value[1].data()!["adminOnlyMessage"]));
+          } else {
+            emit(PermissionState(
+                permission: MsgPermisson.denied,
+                adminOnly: value[1].data()!["adminOnlyMessage"]));
+          }
+        } else {
           emit(PermissionState(
               permission: MsgPermisson.allow,
               adminOnly: value[1].data()!["adminOnlyMessage"]));
-        } else {
-          emit(PermissionState(
-              permission: MsgPermisson.denied,
-              adminOnly: value[1].data()!["adminOnlyMessage"]));
         }
-      } else {
-        emit(PermissionState(
-            permission: MsgPermisson.allow,
-            adminOnly: value[1].data()!["adminOnlyMessage"]));
       }
     });
   }

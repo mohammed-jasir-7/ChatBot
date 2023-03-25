@@ -18,3 +18,6 @@ class CreateGroupEvent extends GroupEvent {
 class FetchGroupsEvent extends GroupEvent {}
 
 class ProvideGroupsEvent extends GroupEvent {}
+
+//initial event
+class GroupInitialEvent extends GroupEvent {}

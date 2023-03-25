@@ -44,6 +44,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SendMessageEvent>((event, emit) async {
       chatService.onMessaging(message: event.messages, roomID: event.roomID);
     });
-    //request event
+    //initial event
+    on<ChatInitialEvent>((event, emit) => emit(ChatInitial()));
   }
 }

@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
-import 'package:chatbot/views/new%20group%20screen/widgets/group+member_icon.dart';
+import 'package:chatbot/views/new%20group%20screen/widgets/group_member_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -36,6 +36,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   final _textEditingController = TextEditingController();
   @override
   void initState() {
+    log("init state is working");
     if (widget.isAddMemberScreen) {
       if (widget.groupId != null) {
         context
@@ -230,14 +231,13 @@ class FloatingNavigationButton extends StatelessWidget {
       child: FloatingActionButton(
         mini: true,
         onPressed: () {
-          log("floating button");
           if (isAddScreen) {
             if (gName != null && groupId != null) {
-              log("floating addscreen");
               context.read<GroupFunctionalityBloc>().add(AddMembersToDbEvent(
                   selectedBots: selectedBots.value,
                   groupId: groupId!,
                   gName: gName!));
+              Navigator.pop(context);
             }
           } else {
             Navigator.push(

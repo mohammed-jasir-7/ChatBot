@@ -14,6 +14,5 @@ abstract class GroupServices {
       {required String groupId, required bool currentState});
   Future<dynamic> exitGroup(
       {required String groupId, required String currentUserId});
-  Future<dynamic> dismissGroup(
-      {required String groupId, required List<String> currentUserId});
+  Future<dynamic> dismissGroup({required String groupId});
 }

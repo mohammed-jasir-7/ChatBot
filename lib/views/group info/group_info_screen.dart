@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:chatbot/Models/group_model.dart';
 import 'package:chatbot/views/group%20info/widgets/group_settings.dart';
+import 'package:chatbot/views/home%20Screen/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../Controllers/group functionality/group_functionality_bloc.dart';
 import '../../util.dart';
 import '../common/widgets/custom_text.dart';
 import 'functions/group_members_sheet.dart';
+
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class GrpupInfoScreen extends StatelessWidget {
   const GrpupInfoScreen({super.key, required this.groupInfo});
@@ -14,6 +19,7 @@ class GrpupInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: backroundColor,
       appBar: AppBar(
         backgroundColor: backroundColor,
@@ -50,8 +56,9 @@ class GrpupInfoScreen extends StatelessWidget {
                   SizedBox(
                     width: 300,
                     child: ListTile(
-                      onTap: () {
-                        showMembers(context, groupInfo.groupId, groupInfo.name);
+                      onTap: () async {
+                        await showMembers(
+                            context, groupInfo.groupId, groupInfo.name);
                       },
                       leading: const Icon(
                         Icons.group,
@@ -87,7 +94,24 @@ class GrpupInfoScreen extends StatelessWidget {
               ),
               // exit group
 
-              BlocBuilder<GroupFunctionalityBloc, GroupFunctionalityState>(
+              BlocConsumer<GroupFunctionalityBloc, GroupFunctionalityState>(
+                listener: (context, state) {
+                  if (state is ExitedGroup) {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(),
+                        ),
+                        (route) => false);
+                  } else if (state is DismissState) {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HomeScreen(),
+                        ),
+                        (route) => false);
+                  }
+                },
                 builder: (context, state) {
                   if (state is MembersLoadedState) {
                     if (state.currentUser != null) {
@@ -115,7 +139,47 @@ class GrpupInfoScreen extends StatelessWidget {
           width: 300,
           child: ListTile(
             onTap: () {
-              showAboutDialog(context: context);
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  // <-- SEE HERE
+                  title: isExitGroup
+                      ? const Text('Exit group')
+                      : const Text('Dismiss group'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: [
+                        isExitGroup
+                            ? const Text('Are you sure want to exit group?')
+                            : const Text('Are you sure want to Dismiss group?'),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('No'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('Yes'),
+                      onPressed: () {
+                        if (isExitGroup) {
+                          context
+                              .read<GroupFunctionalityBloc>()
+                              .add(ExitGroup(groupId: groupInfo.groupId));
+                        } else {
+                          context
+                              .read<GroupFunctionalityBloc>()
+                              .add(DismissGroup(groupId: groupInfo.groupId));
+                          // Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
             leading: const Icon(
               Icons.exit_to_app,

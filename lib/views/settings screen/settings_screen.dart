@@ -61,18 +61,16 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () async {
-                      // context.read<GroupBloc>().close();
-
                       // context.read<ChatBloc>().close();
                       // context.read<GroupFunctionalityBloc>().close();
                       // context.read<GchatBloc>().close();
-
-                      await FirebaseAuth.instance.signOut();
 
                       final gg = GoogleSignIn();
 
                       gg.disconnect();
                       FirebaseFirestore.instance.clearPersistence();
+                      await FirebaseAuth.instance.signOut();
+
                       if (context.mounted) {
                         Navigator.pushAndRemoveUntil(
                             context,
@@ -80,6 +78,12 @@ class SettingsScreen extends StatelessWidget {
                               builder: (context) => const SplashScreen(),
                             ),
                             (route) => false);
+                        // context.read<ChatBloc>().add(ChatInitialEvent());
+                        // context.read<GchatBloc>().add(GchatInitialEvent());
+                        // context.read<GroupBloc>().add(GroupInitialEvent());
+                        // context
+                        //     .read<GroupFunctionalityBloc>()
+                        //     .add(GroupFunctionalityInitialEvent());
                       }
                     },
                     child: const Text("logout"))

@@ -56,7 +56,8 @@ class SplashScreen extends StatelessWidget {
 Future authCheck(
   BuildContext context,
 ) async {
-  await Future.delayed(const Duration(seconds: 5));
+  await Future.delayed(const Duration(seconds: 0));
+
   final user = FirebaseAuth.instance.currentUser;
 
   if (context.mounted) {

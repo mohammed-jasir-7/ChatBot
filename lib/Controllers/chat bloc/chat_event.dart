@@ -38,3 +38,9 @@ class OfflineEvent extends ChatEvent {
   @override
   List<Object?> get props => [];
 }
+
+//intitial event
+class ChatInitialEvent extends ChatEvent {
+  @override
+  List<Object?> get props => [];
+}

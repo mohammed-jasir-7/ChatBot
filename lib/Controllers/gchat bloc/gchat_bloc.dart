@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../Models/group_model.dart';
 import '../../Models/message_model.dart';
@@ -16,7 +17,7 @@ class GchatBloc extends Bloc<GchatEvent, GchatState> {
   final FirebaseFirestore firestore;
   GchatBloc({required this.firestore}) : super(GchatInitial()) {
     final groupChatService = GroupChatService();
-    final currentuser = FirebaseAuth.instance.currentUser!.uid;
+
     String? currentuserName;
     String? currentuserImage;
 
@@ -26,19 +27,21 @@ class GchatBloc extends Bloc<GchatEvent, GchatState> {
           userName: currentuserName!,
           message: event.message,
           groupId: event.groupId,
-          currentUser: currentuser,
+          currentUser: FirebaseAuth.instance.currentUser!.uid,
           image: currentuserImage);
     });
 
     ///fetch message when open chat screeen
     on<FetchMessageEvent>((event, emit) async {
       emit(LoadingState());
+      await FirebaseAuth.instance.currentUser!.reload();
       final userName = await FirebaseFirestore.instance
           .collection('users')
-          .doc(currentuser)
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
       currentuserName = userName.data()!["userName"];
       currentuserImage = userName.data()!["photo"];
+      log("");
       final members = FirebaseFirestore.instance
           .collection("groupChat")
           .doc(event.groupId)
@@ -55,9 +58,12 @@ class GchatBloc extends Bloc<GchatEvent, GchatState> {
       CombineLatestStream.list([members, messages]).listen((value) async {
         List<GroupMsgModel> allmessages = [];
         GroupMember? currentUserData;
-
+//current user data
+        //for showing gorup members list
+        //==================================================
         for (var element in value[0].docs) {
-          if (element.data()["botId"] == currentuser) {
+          if (element.data()["botId"] ==
+              FirebaseAuth.instance.currentUser!.uid) {
             final user = await FirebaseFirestore.instance
                 .collection("users")
                 .doc(element.data()["botId"])
@@ -72,15 +78,15 @@ class GchatBloc extends Bloc<GchatEvent, GchatState> {
             }
           }
         }
+        //===============================================
         for (var msg in value[1].docs) {
-          // final time = DateFormat.jm()
-          //     .format((msg.data()["time"] as Timestamp).toDate());
+          final time = (msg.data()["time"] as Timestamp).toDate().toString();
 
           allmessages.add(GroupMsgModel(
               image: msg.data()["image"],
               username: msg.data()["userName"],
               message: msg.data()["message"],
-              time: "",
+              time: time,
               sendby: msg.data()["sendby"]));
         }
         log("mesage length ${allmessages.length} member${members.length}");
@@ -97,5 +103,6 @@ class GchatBloc extends Bloc<GchatEvent, GchatState> {
         currentUsername: currentuserName!,
       ));
     });
+    on<GchatInitialEvent>((event, emit) => emit(GchatInitial()));
   }
 }

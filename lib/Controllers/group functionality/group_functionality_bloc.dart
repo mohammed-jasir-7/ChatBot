@@ -119,7 +119,7 @@ class GroupFunctionalityBloc
     on<AddMembersToDbEvent>((event, emit) async {
       log("add membrs event");
       List<String> users = event.selectedBots.map((e) => e.bot.uid).toList();
-      final reult = await groupServices.addMember(
+      await groupServices.addMember(
           members: users, groupId: event.groupId, gName: event.gName);
       add(FetchMembersEvent(groupId: event.groupId));
     });
@@ -148,5 +148,21 @@ class GroupFunctionalityBloc
       await groupServices.adminOnlyMssage(
           groupId: event.groupId, currentState: event.currentState);
     });
+    //exit group
+    on<ExitGroup>((event, emit) async {
+      final result = await groupServices.exitGroup(
+          groupId: event.groupId, currentUserId: firebaseAuth.currentUser!.uid);
+      if (result is bool && result == true) {
+        emit(ExitedGroup());
+      }
+    });
+    //dismiss group
+    on<DismissGroup>((event, emit) async {
+      groupServices.dismissGroup(groupId: event.groupId);
+      emit(DismissState());
+    });
+    // initial event
+    on<GroupFunctionalityInitialEvent>((event, emit) =>
+        emit(MembersLoadedState.initial(isloading: true, members: [])));
   }
 }

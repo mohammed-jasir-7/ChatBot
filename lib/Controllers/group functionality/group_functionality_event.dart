@@ -75,3 +75,18 @@ class AdminOnlyMessageEvent extends GroupFunctionalityEvent {
   const AdminOnlyMessageEvent(
       {required this.groupId, required this.currentState});
 }
+
+class ExitGroup extends GroupFunctionalityEvent {
+  final String groupId;
+
+  const ExitGroup({required this.groupId});
+}
+
+class DismissGroup extends GroupFunctionalityEvent {
+  final String groupId;
+
+  const DismissGroup({required this.groupId});
+}
+
+// intial event
+class GroupFunctionalityInitialEvent extends GroupFunctionalityEvent {}

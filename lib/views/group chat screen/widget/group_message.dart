@@ -1,6 +1,7 @@
 import 'package:chatbot/Models/message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../util.dart';
 import '../../common/widgets/custom_text.dart';
 
@@ -73,7 +74,8 @@ class GroupMessage extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomText(
-                        content: message.time,
+                        content: DateFormat.jm()
+                            .format(DateTime.parse(message.time)),
                         size: 11,
                         colour: message.sendby == uID
                             ? colorMessageClientTextWhite.withOpacity(0.5)

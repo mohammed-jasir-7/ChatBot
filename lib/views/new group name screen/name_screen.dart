@@ -5,7 +5,7 @@ import 'package:chatbot/Models/select_model.dart';
 import 'package:chatbot/Service/profile%20service/profile_service.dart';
 import 'package:chatbot/injectable.dart';
 import 'package:chatbot/views/home%20Screen/home_screen.dart';
-import 'package:chatbot/views/new%20group%20screen/widgets/group+member_icon.dart';
+import 'package:chatbot/views/new%20group%20screen/widgets/group_member_icon.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

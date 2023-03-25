@@ -1,9 +1,9 @@
-import 'package:chatbot/views/new%20group%20screen/new_group_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../Models/select_model.dart';
 import '../../../util.dart';
 import '../../common/widgets/custom_text.dart';
+import '../new_group_screen.dart';
 
 class GroupMembersIcon extends StatelessWidget {
   GroupMembersIcon({super.key, required this.bot, this.isVisible = true});
