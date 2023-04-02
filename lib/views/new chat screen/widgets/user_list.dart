@@ -1,6 +1,15 @@
 import 'dart:developer';
 
+import 'package:chatbot/Controllers/videocall/videocall_bloc.dart';
+import 'package:chatbot/Service/chat/chat_service.dart';
+import 'package:chatbot/views/call%20screen/call_screen.dart';
+import 'package:chatbot/views/videocall%20screen/videocall_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,6 +44,8 @@ class _UsersListInContactState extends State<UsersListInContact> {
 
   @override
   Widget build(BuildContext context) {
+    int localUid = FirebaseAuth.instance.currentUser!.uid.codeUnits[0];
+    log(localUid.toString());
     return Column(
       children: [
         SizedBox(
@@ -72,7 +83,6 @@ class _UsersListInContactState extends State<UsersListInContact> {
                       previous != current || previous == current,
                   listener: (context, state) {
                     if (state is ChatFirstState) {
-                      log("Chat enter event");
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -104,21 +114,30 @@ class _UsersListInContactState extends State<UsersListInContact> {
                           ? requestButton(index)
                           : Column(
                               mainAxisAlignment: MainAxisAlignment.end,
-                              children: const [
-                                CircleAvatar(
-                                  backgroundColor: Colors.green,
-                                  radius: 10,
-                                  child: Center(
-                                      child: CustomText(
-                                    content: "1",
-                                    colour: colorSearchBartext,
-                                    size: 10,
-                                  )),
-                                ),
-                                CustomText(
-                                  content: "5:11",
-                                  colour: colorWhite,
-                                )
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      FirebaseFirestore.instance
+                                          .disableNetwork();
+
+                                      final roomid = ChatService();
+                                      roomid.onCreateRoomId(result[index].uid);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                VideocallScreen(
+                                                    bot: result[index]),
+                                          ));
+                                      log("videoscreeen");
+                                      context.read<VideocallBloc>().add(
+                                          VideocallingEvent(
+                                              botId: result[index].uid));
+                                    },
+                                    icon: Icon(
+                                      Icons.video_call,
+                                      color: colorlogo,
+                                    ))
                               ],
                             ),
                       title: CustomText(

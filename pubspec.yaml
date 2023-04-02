@@ -56,6 +56,11 @@ dependencies:
   get_it: ^7.2.0
   injectable: ^2.1.0
   sticky_headers: ^0.3.0+2
+  agora_rtc_engine: ^6.1.0
+  permission_handler: ^10.2.0
+  lottie: ^2.3.1
+  flutter_countdown_timer: ^4.1.0
+  http: ^0.13.5
   
 
 dev_dependencies:
@@ -94,6 +99,7 @@ flutter:
      - assets/images/googleLogo.png
      - assets/images/isWatching.png
      - assets/images/nullPhoto.jpeg
+     - assets/images/videocall.json
  
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

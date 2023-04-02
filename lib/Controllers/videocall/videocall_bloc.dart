@@ -51,18 +51,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
         RtcEngineEventHandler(
           onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
             islocalJoin = true;
-            firestore
-                .collection("users")
-                .doc()
-                .collection("videocall")
-                .doc("currentState")
-                .set({
-              "videocallFrom": FirebaseAuth.instance.currentUser!.uid,
-              "time": FieldValue.serverTimestamp(),
-              "isCalling": true,
-              "videocallTo": event.botId,
-              "channelName": channelName,
-            });
+
             add(ClientJoinedEvent(
                 agoraEngine: agoraEngine,
                 channelName: channelName,

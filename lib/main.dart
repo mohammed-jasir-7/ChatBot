@@ -3,6 +3,7 @@ import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
 import 'package:chatbot/Controllers/group%20chat%20bloc/group_bloc.dart';
 import 'package:chatbot/Controllers/profile/profile_bloc_bloc.dart';
 import 'package:chatbot/Controllers/search%20bloc/search_bloc.dart';
+import 'package:chatbot/Controllers/videocall/videocall_bloc.dart';
 import 'package:chatbot/Service/profile%20service/profile_service.dart';
 import 'package:chatbot/injectable.dart';
 import 'package:chatbot/util.dart';
@@ -42,14 +43,29 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (context) => UsersBloc()),
         BlocProvider(create: (context) => GroupBloc()),
+        BlocProvider(create: (context) => getIt<VideocallBloc>()),
         BlocProvider(lazy: true, create: (context) => getIt<GchatBloc>()),
         BlocProvider(
             lazy: true, create: (context) => getIt<GroupFunctionalityBloc>()),
       ],
       child: MaterialApp(
+          builder: (_, child) => _Unfocus(child: child!),
           debugShowCheckedModeBanner: false,
           theme: ThemeData(primaryColor: primaaryColor, useMaterial3: true),
           home: const SplashScreen()),
+    );
+  }
+}
+
+class _Unfocus extends StatelessWidget {
+  const _Unfocus({super.key, required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: child,
     );
   }
 }
