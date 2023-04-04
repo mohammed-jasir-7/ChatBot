@@ -32,3 +32,11 @@ class ClientJoinedEvent extends VideocallEvent {
       this.localUid,
       this.isLocalJoined = false});
 }
+
+class LeavecallEvent extends VideocallEvent {}
+
+class CallAcceptEvent extends VideocallEvent {
+  final String channelname;
+
+  const CallAcceptEvent({required this.channelname});
+}

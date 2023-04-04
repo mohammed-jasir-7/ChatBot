@@ -31,3 +31,5 @@ class VideocallingState extends VideocallState {
 }
 
 class ConnectingState extends VideocallState {}
+
+class LeavecallState extends VideocallState {}

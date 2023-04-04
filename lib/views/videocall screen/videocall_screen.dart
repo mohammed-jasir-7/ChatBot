@@ -14,8 +14,8 @@ import '../../Models/user_model.dart';
 const String appId = "e52f2861ba4a4fd4bf374a7e6fa4e0b3";
 
 class VideocallScreen extends StatefulWidget {
-  const VideocallScreen({super.key, required this.bot});
-  final Bot bot;
+  VideocallScreen({super.key, this.bot});
+  Bot? bot;
 
   @override
   State<VideocallScreen> createState() => _VideocallScreenState();
@@ -54,9 +54,10 @@ class _VideocallScreenState extends State<VideocallScreen> {
                     Align(
                       alignment: Alignment.center,
                       child: CircleAvatar(
-                        backgroundImage: widget.bot.photo != null
-                            ? NetworkImage(widget.bot.photo!)
-                            : AssetImage(nullPhoto) as ImageProvider,
+                        backgroundImage:
+                            widget.bot != null && widget.bot!.photo != null
+                                ? NetworkImage(widget.bot!.photo!)
+                                : AssetImage(nullPhoto) as ImageProvider,
                         radius: size.height > size.width
                             ? size.height / 10
                             : size.width / 10,
@@ -127,7 +128,12 @@ class VideoCallButtons extends StatelessWidget {
                     HapticFeedback.heavyImpact().timeout(Duration(minutes: 3));
                   },
                   child: Icon(Icons.mic)),
-              BlocBuilder<VideocallBloc, VideocallState>(
+              BlocConsumer<VideocallBloc, VideocallState>(
+                listener: (context, state) {
+                  if (state is LeavecallState) {
+                    Navigator.pop(context);
+                  }
+                },
                 builder: (context, state) {
                   if (state is VideocallingState) {
                     return ElevatedButton(
@@ -139,6 +145,7 @@ class VideoCallButtons extends StatelessWidget {
                         ),
                         onPressed: () {
                           leave(agoraEngine: state.agoraEngine);
+                          Navigator.pop(context);
                         },
                         child: Icon(Icons.video_call));
                   } else {
