@@ -23,6 +23,7 @@ class ClientJoinedEvent extends VideocallEvent {
   String? rrr;
   int? localUid;
   final String channelName;
+  String? localusername;
 
   ClientJoinedEvent(
       {required this.agoraEngine,
@@ -30,7 +31,8 @@ class ClientJoinedEvent extends VideocallEvent {
       this.isJoined = false,
       this.remoteUid,
       this.localUid,
-      this.isLocalJoined = false});
+      this.isLocalJoined = false,
+      this.localusername});
 }
 
 class LeavecallEvent extends VideocallEvent {}

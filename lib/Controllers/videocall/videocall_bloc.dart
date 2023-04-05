@@ -27,6 +27,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
 
     on<VideocallingEvent>((event, emit) async {
       emit(ConnectingState());
+
       String? token;
       int localUid = FirebaseAuth.instance.currentUser!.uid.codeUnitAt(0);
       bool islocalJoin = false;
@@ -40,7 +41,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
       await [Permission.microphone, Permission.camera].request();
 
       //create an instance of the Agora engine
-      // agoraEngine = createAgoraRtcEngine();
+      //agoraEngine = createAgoraRtcEngine();
       await agoraEngine.initialize(const RtcEngineContext(appId: appId));
 
       await agoraEngine.enableVideo();
@@ -49,7 +50,6 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
       ///
       final remoteUser =
           await firestore.collection("users").doc(event.botId).get();
-      log("000000000000000000000000000000000000000000000000000 ${remoteUser.data()!["token"]}");
       final localUser = await firestore
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -65,13 +65,22 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
             userName: localUser.data()!["userName"],
             channelName: channelName,
             tokenOfRemoteUser: tokenOfRemoteUser);
+
 //=======================
+        ///update to database
+        ///text notification
+
+        log("beforeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee reg handkler");
+
+//===================end text notification ========================================
         agoraEngine.registerEventHandler(
           RtcEngineEventHandler(
             onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
               islocalJoin = true;
+              log("locaalllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal joined");
 
               add(ClientJoinedEvent(
+                  localusername: localUser.data()!["userName"],
                   agoraEngine: agoraEngine,
                   channelName: channelName,
                   isJoined: isremoteJoin,
@@ -81,10 +90,12 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
             },
             onUserJoined:
                 (RtcConnection connection, int remoteUidd, int elapsed) {
-              //isremoteJoin = true;
+              isremoteJoin = true;
               remoteUid = remoteUidd;
+              log("remoteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee joined");
 
               add(ClientJoinedEvent(
+                  localusername: localUser.data()!["userName"],
                   agoraEngine: agoraEngine,
                   channelName: channelName,
                   isJoined: isremoteJoin,
@@ -122,6 +133,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
             channelId: channelName,
             uid: localUid,
             options: options);
+        log("hellllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllo");
       }
 
       // Register the event handler
@@ -130,9 +142,8 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
     /// this event trigger when remote user joined
     /// and local user also
 
-    on<ClientJoinedEvent>((event, emit) {
+    on<ClientJoinedEvent>((event, emit) async {
       emit(ConnectingState());
-
       emit(VideocallingState(
           agoraEngine: event.agoraEngine,
           channelName: event.channelName,
@@ -140,6 +151,27 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
           isLocalJoined: event.isLocalJoined,
           remoteUid: event.remoteUid,
           localUid: event.localUid));
+      Map<String, dynamic> messages = {
+        "message": "${event.localusername} ",
+        "sendby": FirebaseAuth.instance.currentUser!.uid,
+        "time": FieldValue.serverTimestamp(),
+        "isread": false,
+        "messageType": "notif"
+      };
+
+      final docId = await firestore
+          .collection("chatroom")
+          .doc(event.channelName)
+          .collection("chats")
+          .add(messages);
+      if (docId != null) {
+        firestore
+            .collection("chatroom")
+            .doc(event.channelName)
+            .collection("chats")
+            .doc(docId.id)
+            .update(messages.update("isread", (value) => true));
+      }
     });
 //========================================================================
 // trigger when user accept call
@@ -175,7 +207,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
           },
           onUserJoined:
               (RtcConnection connection, int remoteUidd, int elapsed) {
-            //isremoteJoin = true;
+            isremoteJoin = true;
             remoteUid = remoteUidd;
 
             add(ClientJoinedEvent(

@@ -141,7 +141,7 @@ class ChatScreen extends StatelessWidget {
                         });
                   }
 
-                  return const CircularProgressIndicator();
+                  return Center(child: const CircularProgressIndicator());
                 }),
           ),
         ),

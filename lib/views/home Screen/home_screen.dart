@@ -18,15 +18,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../Controllers/profile/profile_bloc_bloc.dart';
 
 class HomeScreen extends StatefulWidget {
-  HomeScreen({super.key});
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final List screens = [
-    const CallScreen(),
     ChatScreen(),
     ContactScreen(),
     SettingsScreen(),
@@ -43,6 +42,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
+    WidgetsBinding.instance.addObserver(this);
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({"isOnline": true});
     tokenUpdate();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       String? title = message.notification?.title;
@@ -96,55 +101,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: ValueListenableBuilder(
-        valueListenable: _index,
-        builder: (context, index, child) => screens[index],
-      ),
-      bottomNavigationBar: CurvedNavigationBar(
-          index: 1,
-          animationCurve: Curves.easeInOut,
-          animationDuration: const Duration(milliseconds: 500),
-          onTap: (value) {
-            _index.value = value;
-          },
-          buttonBackgroundColor: colorWhite,
-          height: 50,
-          color: const Color.fromARGB(232, 12, 121, 99),
-          backgroundColor: Colors.transparent,
-          items: const [
-            Icon(
-              Icons.call,
-            ),
-            ChatIcon(),
-            Icon(Icons.people_alt_sharp),
-            Icon(Icons.settings)
-          ]),
-    );
-  }
-}
-
-class ChatIcon extends StatefulWidget {
-  const ChatIcon({
-    super.key,
-  });
-
-  @override
-  State<ChatIcon> createState() => _ChatIconState();
-}
-
-class _ChatIconState extends State<ChatIcon> with WidgetsBindingObserver {
-  @override
-  void initState() {
-    context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
-    WidgetsBinding.instance.addObserver(this);
+  void dispose() {
     FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({"isOnline": true});
-    super.initState();
+        .update({"isOnline": false});
+
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
@@ -176,18 +140,29 @@ class _ChatIconState extends State<ChatIcon> with WidgetsBindingObserver {
   }
 
   @override
-  void dispose() {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({"isOnline": false});
-
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Icon(Icons.message_outlined);
+    return Scaffold(
+      extendBody: true,
+      body: ValueListenableBuilder(
+        valueListenable: _index,
+        builder: (context, index, child) => screens[index],
+      ),
+      bottomNavigationBar: CurvedNavigationBar(
+          index: 1,
+          animationCurve: Curves.easeInOut,
+          animationDuration: const Duration(milliseconds: 500),
+          onTap: (value) {
+            _index.value = value;
+          },
+          buttonBackgroundColor: colorWhite,
+          height: 50,
+          color: const Color.fromARGB(232, 12, 121, 99),
+          backgroundColor: Colors.transparent,
+          items: const [
+            Icon(Icons.message_outlined),
+            Icon(Icons.people_alt_sharp),
+            Icon(Icons.settings)
+          ]),
+    );
   }
 }

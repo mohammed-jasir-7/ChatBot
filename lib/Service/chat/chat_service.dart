@@ -57,17 +57,22 @@ class ChatService {
       "message": message,
       "sendby": currentUser,
       "time": FieldValue.serverTimestamp(),
-      "isread": false
+      "isread": false,
+      "messageType": "msg"
     };
     await FirebaseFirestore.instance
         .collection("chatroom")
         .doc(roomID)
         .collection("chats")
         .add(messages);
+
+    //for user live in chat room
     await FirebaseFirestore.instance
         .collection('chatroom')
         .doc(roomID)
         .set({currentUser: true});
+    await FirebaseFirestore.instance.collection('chatroom').doc(roomID).update(
+        {"lastMsg": message, "sendby": currentUser, "messageType": "msg"});
   }
 
   Future<dynamic> fetchmessages({required String roomID}) async {

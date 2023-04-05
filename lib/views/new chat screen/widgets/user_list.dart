@@ -45,7 +45,7 @@ class _UsersListInContactState extends State<UsersListInContact> {
   @override
   Widget build(BuildContext context) {
     int localUid = FirebaseAuth.instance.currentUser!.uid.codeUnits[0];
-    log(localUid.toString());
+    log("userlistincontact");
     return Column(
       children: [
         SizedBox(
@@ -79,9 +79,8 @@ class _UsersListInContactState extends State<UsersListInContact> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return BlocListener<ChatBloc, ChatState>(
-                  listenWhen: (previous, current) =>
-                      previous != current || previous == current,
                   listener: (context, state) {
+                    log("bloc listnerrrrr $state");
                     if (state is ChatFirstState) {
                       Navigator.push(
                           context,
@@ -96,6 +95,8 @@ class _UsersListInContactState extends State<UsersListInContact> {
                   child: InkWell(
                     onTap: () {
                       if (!widget.iscontactScreen) {
+                        log("enter to event");
+
                         context
                             .read<ChatBloc>()
                             .add(EnterToChatEvent(bot: result[index]));

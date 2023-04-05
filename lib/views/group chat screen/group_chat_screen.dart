@@ -26,7 +26,6 @@ class GroupChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentUser = FirebaseAuth.instance.currentUser!.uid;
     WidgetsBinding.instance.addPostFrameCallback((_) {});
-    log("group chat screen");
 
     return Scaffold(
       extendBody: true,

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
+import 'package:chatbot/Models/message_model.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/individual%20chat%20screen/widgets/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,7 +8,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import 'package:sticky_headers/sticky_headers/widget.dart';
 import '../../Models/user_model.dart';
+import '../common/widgets/custom_text.dart';
 import 'widgets/appbar.dart';
 
 ValueNotifier<bool> isWatcing = ValueNotifier(false);
@@ -31,6 +35,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
   final ScrollController _scrollController = ScrollController();
   @override
   void initState() {
+    context.read<ChatBloc>().add(ChatLoadingEvent(widget.roomID));
     WidgetsBinding.instance.addObserver(this);
     try {
       FirebaseFirestore.instance
@@ -84,6 +89,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
 
   @override
   Widget build(BuildContext context) {
+    log("ivduvidual screeeeeen");
     return Scaffold(
       extendBody: true,
       backgroundColor: backroundColor,
@@ -107,32 +113,38 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Expanded(
-                  child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection("chatroom")
-                          .doc(widget.roomID)
-                          .collection("chats")
-                          .orderBy("time", descending: true)
-                          .snapshots(),
+                  child: BlocBuilder<ChatBloc, ChatState>(
                       builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return ListView.builder(
-                            controller: _scrollController,
-                            reverse: true,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              return Message(
-                                message: snapshot.data!.docs[index],
-                                uID: _currentuser!.uid,
-                              );
-                            },
-                            itemCount: snapshot.data!.docs.length,
-                          );
-                        } else {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                      }),
+                    log(snapshot.toString());
+                    if (snapshot is PovideAllMessageState) {
+                      return ListView.builder(
+                        controller: _scrollController,
+                        reverse: true,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          String previousDate = index <
+                                  snapshot.allMessages.length - 1
+                              ? DateFormat.yMMMMEEEEd().format((DateTime.parse(
+                                  snapshot.allMessages[index + 1].time)))
+                              : "";
+
+                          String date = DateFormat.yMMMMEEEEd().format(
+                              DateTime.parse(snapshot.allMessages[index].time));
+                          log(previousDate);
+                          return previousDate != date
+                              ? dateDivider(snapshot.allMessages[index],
+                                  _currentuser!.uid)
+                              : Message(
+                                  message: snapshot.allMessages[index],
+                                  uID: _currentuser!.uid,
+                                );
+                        },
+                        itemCount: snapshot.allMessages.length,
+                      );
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  }),
                 ),
                 StreamBuilder(
                     stream: FirebaseFirestore.instance
@@ -211,4 +223,44 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
         border: InputBorder.none,
         errorBorder: InputBorder.none);
   }
+}
+
+StickyHeaderBuilder dateDivider(PersonalMsgModel state, String currentUser) {
+  return StickyHeaderBuilder(
+    builder: (context, stuckAmount) {
+      String dateofChat = state.time;
+      DateTime convertedDate = DateTime.parse(state.time);
+      if (convertedDate.day == DateTime.now().day &&
+          convertedDate.month == DateTime.now().month &&
+          convertedDate.year == DateTime.now().year) {
+        dateofChat = "Today";
+      } else if (convertedDate.day ==
+              DateTime.now().subtract(const Duration(days: 1)).day &&
+          convertedDate.month == DateTime.now().month &&
+          convertedDate.year == DateTime.now().year) {
+        dateofChat = "Yesterday";
+      } else {
+        dateofChat = DateFormat.yMMMMEEEEd().format(convertedDate);
+      }
+
+      return Align(
+        alignment: Alignment.center,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 13),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(40),
+              color: colorSearchBarFilled),
+          child: CustomText(
+            content: dateofChat,
+            colour: colorMessageClientTextWhite,
+            size: 13,
+          ),
+        ),
+      );
+    },
+    content: Message(
+      message: state,
+      uID: currentUser,
+    ),
+  );
 }

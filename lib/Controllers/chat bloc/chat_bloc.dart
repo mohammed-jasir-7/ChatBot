@@ -1,9 +1,11 @@
 import 'dart:developer';
+import 'package:chatbot/Models/message_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:chatbot/Models/user_model.dart';
 import 'package:chatbot/Service/chat/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:rxdart/rxdart.dart';
 part 'chat_event.dart';
 part 'chat_state.dart';
 
@@ -16,24 +18,51 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<EnterToChatEvent>((event, emit) async {
       String roomID = await chatService.onCreateRoomId(event.bot.uid);
 
-      emit(LoadingState());
+      // emit(LoadingState());
 
-      emit(ChatFirstState(bot: event.bot, roomID: roomID));
-
-      FirebaseFirestore.instance
+      final online = FirebaseFirestore.instance
           .collection("users")
           .doc(event.bot.uid)
-          .snapshots()
-          .listen((data) {
-        if (data.get("isOnline")) {
-          log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk ${data.get("isOnline")} ${event.bot.email}");
-          log("online bloc");
-          add(OnlineEvent());
-        } else {
-          log("gggggggggggggggggggggggggggggg ${data.get("isOnline")}");
-          log("offline bloc");
-          add(OfflineEvent());
+          .snapshots();
+
+      emit(ChatFirstState(bot: event.bot, roomID: roomID));
+    });
+
+//loadmsg event
+    on<ChatLoadingEvent>((event, emit) {
+      final message = FirebaseFirestore.instance
+          .collection("chatroom")
+          .doc(event.roomId)
+          .collection("chats")
+          .orderBy("time", descending: true)
+          .snapshots();
+      CombineLatestStream.list([
+        message,
+      ]).listen((value) async {
+        List<PersonalMsgModel> allmessages = [];
+        // if ((value[1] as DocumentSnapshot<Map<String, dynamic>>)
+        //     .get("isOnline")) {
+        //   add(OnlineEvent());
+        // } else {
+        //   add(OfflineEvent());
+        // }
+
+        for (var msg
+            in (value[0] as QuerySnapshot<Map<String, dynamic>>).docs) {
+          String time = msg.data()["time"] != null
+              ? (msg.data()["time"] as Timestamp).toDate().toString()
+              : DateTime.now().toString();
+
+          allmessages.add(PersonalMsgModel(
+              image: msg.data()["image"],
+              message: msg.data()["message"],
+              time: time,
+              sendby: msg.data()["sendby"],
+              messageType: msg.data()["messageType"],
+              isRead: msg.data()["isread"]));
+          log("ggggggggggggggggggg");
         }
+        add(ProvideChatEvent(allMessages: allmessages));
       });
     });
     //online anf offline event
@@ -46,5 +75,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
     //initial event
     on<ChatInitialEvent>((event, emit) => emit(ChatInitial()));
+    //provide all messages
+    on<ProvideChatEvent>((event, emit) =>
+        emit(PovideAllMessageState(allMessages: event.allMessages)));
   }
 }

@@ -228,6 +228,7 @@ class LocalCameraView extends StatelessWidget {
                 size.height > size.width ? size.height / 5 : size.height / 3.8,
             child: BlocBuilder<VideocallBloc, VideocallState>(
               builder: (context, state) {
+                log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh $state");
                 if (state is VideocallingState) {
                   return _localPreview(
                       isLocalJoined: state.isLocalJoined,

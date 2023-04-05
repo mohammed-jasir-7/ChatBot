@@ -1,12 +1,8 @@
-import 'dart:developer';
-
 import 'package:chatbot/Models/user_model.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
 import 'package:chatbot/views/new%20chat%20screen/widgets/user_list.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../Controllers/users bloc/users_bloc.dart';
 import '../../util.dart';
 
@@ -35,19 +31,19 @@ class ContactScreen extends StatelessWidget {
               dividerColor: Colors.transparent,
               indicatorColor: Colors.transparent,
               tabs: [
-                Container(child: Tab(child: CustomText(content: "All Users"))),
+                const Tab(child: CustomText(content: "All Users")),
                 Tab(
                   child: Container(
-                    constraints: BoxConstraints(minWidth: 50),
+                    constraints: const BoxConstraints(minWidth: 50),
                     child: Row(
                       children: [
-                        CustomText(content: "Request"),
+                        const CustomText(content: "Request"),
                         ValueListenableBuilder(
                           valueListenable: requestCount,
                           builder: (context, value, child) => value == 0
-                              ? SizedBox.shrink()
+                              ? const SizedBox.shrink()
                               : Container(
-                                  margin: EdgeInsets.only(left: 5),
+                                  margin: const EdgeInsets.only(left: 5),
                                   decoration: BoxDecoration(
                                     color: Colors.red,
                                     borderRadius: BorderRadius.circular(40),
@@ -78,38 +74,43 @@ class ContactScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             //stream builder
             //listen users collecion firestore
-            child:
-                BlocConsumer<UsersBloc, UsersState>(listener: (context, state) {
-              log(" herrrrrrrrrrrrrrrre   ${state.toString()}");
-            }, builder: (context, state) {
-              final List<Bot> bots = [];
-              if (state is OtherUsers) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  for (var bot in state.bots) {
-                    if (bot.state == BotsState.request) {
-                      bots.add(bot);
-                    }
-                  }
-                });
+            child: BlocConsumer<UsersBloc, UsersState>(
+                listener: (context, state) {},
+                builder: (context, state) {
+                  final List<Bot> bots = [];
+                  if (state is OtherUsers) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      for (var bot in state.bots) {
+                        if (bot.state == BotsState.request) {
+                          bots.add(bot);
+                        }
+                      }
+                    });
 
-                requestCount.value = bots.length;
-                return TabBarView(
-                  children: [
-                    UsersListInContact(
-                      users: state.bots,
-                      iscontactScreen: true,
-                    ),
-                    UsersListInContact(
-                      users: bots,
-                      iscontactScreen: true,
-                    ),
-                  ],
-                );
-              } else {
-                return TabBarView(
-                    children: [Text("nodata"), Text("nodatadddddddddddddddd")]);
-              }
-            }),
+                    requestCount.value = bots.length;
+                    return TabBarView(
+                      children: [
+                        UsersListInContact(
+                          users: state.bots,
+                          iscontactScreen: true,
+                        ),
+                        UsersListInContact(
+                          users: bots,
+                          iscontactScreen: true,
+                        ),
+                      ],
+                    );
+                  } else {
+                    return const TabBarView(children: [
+                      Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    ]);
+                  }
+                }),
           ),
         ),
       ),

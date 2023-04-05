@@ -25,10 +25,13 @@ class SplashScreen extends StatelessWidget {
         height: double.infinity,
         color: backroundColor,
         child: Stack(children: [
-          Image.asset(
-            "assets/images/doodle2.png",
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.low,
+          Align(
+            alignment: Alignment.center,
+            child: Image.asset(
+              "assets/images/doodle2.png",
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.low,
+            ),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,

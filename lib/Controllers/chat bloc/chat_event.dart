@@ -44,3 +44,22 @@ class ChatInitialEvent extends ChatEvent {
   @override
   List<Object?> get props => [];
 }
+
+//chat supply to ui
+class ProvideChatEvent extends ChatEvent {
+  final List<PersonalMsgModel> allMessages;
+
+  const ProvideChatEvent({required this.allMessages});
+  @override
+  List<Object?> get props => [];
+}
+
+class ChatLoadingEvent extends ChatEvent {
+  final String roomId;
+
+  ChatLoadingEvent(this.roomId);
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [roomId];
+}

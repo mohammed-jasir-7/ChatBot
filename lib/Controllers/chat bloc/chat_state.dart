@@ -18,7 +18,7 @@ class ChatFirstState extends ChatState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [bot];
+  List<Object?> get props => [bot, roomID];
 }
 
 class LoadingState extends ChatState {
@@ -45,4 +45,15 @@ class OnlineState extends ChatState {
 class OfflineState extends ChatState {
   @override
   List<Object?> get props => [];
+}
+
+//supply all messages to ui
+class PovideAllMessageState extends ChatState {
+  final List<PersonalMsgModel> allMessages;
+
+  const PovideAllMessageState({required this.allMessages});
+
+  @override
+  // TODO: implement props
+  List<Object?> get props => [allMessages];
 }
