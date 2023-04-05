@@ -12,6 +12,7 @@ import 'package:lottie/lottie.dart';
 import '../../Models/user_model.dart';
 
 const String appId = "e52f2861ba4a4fd4bf374a7e6fa4e0b3";
+ValueNotifier<bool> isLocalUserView = ValueNotifier(false);
 
 class VideocallScreen extends StatefulWidget {
   VideocallScreen({super.key, this.bot});
@@ -25,9 +26,24 @@ class _VideocallScreenState extends State<VideocallScreen> {
   int endTime = 0;
   @override
   void initState() {
-    endTime = DateTime.now().millisecondsSinceEpoch + 11000 * 400;
+    endTime = DateTime.now().millisecondsSinceEpoch + 1000 * 120;
     super.initState();
   }
+
+  @override
+  void dispose() {
+    context.read<VideocallBloc>().add(LeavecallEvent());
+    super.dispose();
+  }
+
+  Offset position = Offset(250, 600);
+  double prevScale = 1;
+  double scale = 1;
+
+  void updateScale(double zoom) => setState(() => scale = prevScale * zoom);
+  void commitScale() => setState(() => prevScale = scale);
+  void updatePosition(Offset newPosition) =>
+      setState(() => position = newPosition);
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +73,7 @@ class _VideocallScreenState extends State<VideocallScreen> {
                         backgroundImage:
                             widget.bot != null && widget.bot!.photo != null
                                 ? NetworkImage(widget.bot!.photo!)
-                                : AssetImage(nullPhoto) as ImageProvider,
+                                : const AssetImage(nullPhoto) as ImageProvider,
                         radius: size.height > size.width
                             ? size.height / 10
                             : size.width / 10,
@@ -68,10 +84,30 @@ class _VideocallScreenState extends State<VideocallScreen> {
               ),
             ),
 
-            RemoteCameraView(size: size), //remote video
+            GestureDetector(
+                onScaleUpdate: (details) => updateScale(details.scale),
+                onScaleEnd: (_) => commitScale(),
+                child: Transform.scale(
+                    scale: scale,
+                    child: RemoteCameraView(size: size))), //remote video
             //============================
 
-            LocalCameraView(size: size), //local camera
+            //  LocalCameraView(size: size), //local camera
+
+            Positioned(
+              left: position.dx,
+              top: position.dy,
+              child: Draggable(
+                maxSimultaneousDrags: 1,
+                feedback: Widg(size: size),
+                childWhenDragging: Opacity(
+                  opacity: .3,
+                  child: Widg(size: size),
+                ),
+                onDragEnd: (details) => updatePosition(details.offset),
+                child: Widg(size: size),
+              ),
+            ),
 
             CountdownTimer(
               onEnd: () => Navigator.of(context).pop(),
@@ -96,8 +132,8 @@ class _VideocallScreenState extends State<VideocallScreen> {
   }
 }
 
-class VideoCallButtons extends StatelessWidget {
-  const VideoCallButtons({
+class Widg extends StatelessWidget {
+  const Widg({
     super.key,
     required this.size,
   });
@@ -106,11 +142,75 @@ class VideoCallButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      width: size.height > size.width ? size.width / 3.8 : size.width / 4.7,
+      height: size.height > size.width ? size.height / 5 : size.height / 3.8,
+      child: ValueListenableBuilder(
+        valueListenable: isLocalUserView,
+        builder: (context, value, child) =>
+            BlocBuilder<VideocallBloc, VideocallState>(
+          builder: (context, state) {
+            if (state is VideocallingState) {
+              log(value.toString());
+              return isLocalUserView.value
+                  ? InkWell(
+                      onDoubleTap: () {
+                        if (state.isJoined) {
+                          isLocalUserView.value = !isLocalUserView.value;
+                          log("heloooooooooo  doubletabbbbb");
+                        }
+                      },
+                      onTap: () {
+                        state.agoraEngine.switchCamera();
+                      },
+                      child: _remoteVideo(
+                          remoteUid: state.remoteUid,
+                          agoraEngine: state.agoraEngine,
+                          channelName: state.channelName,
+                          isJoined: state.isJoined),
+                    )
+                  : InkWell(
+                      onDoubleTap: () {
+                        if (state.isJoined) {
+                          isLocalUserView.value = !isLocalUserView.value;
+                          log("heloooooooooo  doubletabbbbb");
+                        }
+                      },
+                      onTap: () {
+                        state.agoraEngine.switchCamera();
+                      },
+                      child: _localPreview(
+                          isLocalJoined: state.isLocalJoined,
+                          agoraEngine: state.agoraEngine,
+                          localUid: state.localUid),
+                    );
+              ;
+            } else {
+              return const SizedBox();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class VideoCallButtons extends StatelessWidget {
+  VideoCallButtons({super.key, required this.size, this.isIncoming});
+
+  final Size size;
+  bool? isIncoming;
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: size.height / 17),
       child: Align(
         alignment: Alignment.bottomCenter,
-        child: Container(
+        child: SizedBox(
           width:
               size.height > size.width ? size.height / 2.5 : size.width / 2.5,
           child: Row(
@@ -119,15 +219,16 @@ class VideoCallButtons extends StatelessWidget {
             children: [
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(10),
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(10),
                     backgroundColor: Colors.white, // <-- Button color
                     foregroundColor: Colors.black, // <-- Splash color
                   ),
                   onPressed: () {
-                    HapticFeedback.heavyImpact().timeout(Duration(minutes: 3));
+                    HapticFeedback.heavyImpact()
+                        .timeout(const Duration(minutes: 3));
                   },
-                  child: Icon(Icons.mic)),
+                  child: const Icon(Icons.mic)),
               BlocConsumer<VideocallBloc, VideocallState>(
                 listener: (context, state) {
                   if (state is LeavecallState) {
@@ -138,8 +239,8 @@ class VideoCallButtons extends StatelessWidget {
                   if (state is VideocallingState) {
                     return ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
-                          padding: EdgeInsets.all(20),
+                          shape: const CircleBorder(),
+                          padding: const EdgeInsets.all(20),
                           backgroundColor: Colors.red, // <-- Button color
                           foregroundColor: Colors.black, // <-- Splash color
                         ),
@@ -147,21 +248,24 @@ class VideoCallButtons extends StatelessWidget {
                           leave(agoraEngine: state.agoraEngine);
                           Navigator.pop(context);
                         },
-                        child: Icon(Icons.video_call));
+                        child: const Icon(Icons.video_call));
                   } else {
-                    return Text("data");
+                    return Container(
+                        width: 120,
+                        height: 100,
+                        child: Lottie.asset('assets/images/wave.json'));
                   }
                 },
               ),
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    shape: CircleBorder(),
-                    padding: EdgeInsets.all(10),
+                    shape: const CircleBorder(),
+                    padding: const EdgeInsets.all(10),
                     backgroundColor: Colors.white, // <-- Button color
                     foregroundColor: Colors.black, // <-- Splash color
                   ),
                   onPressed: () {},
-                  child: Icon(Icons.camera_alt_outlined))
+                  child: const Icon(Icons.camera_alt_outlined))
             ],
           ),
         ),
@@ -180,21 +284,28 @@ class RemoteCameraView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
-        width: size.width,
-        height: size.height,
-        child: BlocBuilder<VideocallBloc, VideocallState>(
+    return Container(
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(15)),
+      width: size.width,
+      height: size.height,
+      child: ValueListenableBuilder(
+        valueListenable: isLocalUserView,
+        builder: (context, value, child) =>
+            BlocBuilder<VideocallBloc, VideocallState>(
           builder: (context, state) {
             if (state is VideocallingState) {
-              return _remoteVideo(
-                  remoteUid: state.remoteUid,
-                  agoraEngine: state.agoraEngine,
-                  channelName: state.channelName,
-                  isJoined: state.isJoined);
+              return isLocalUserView.value
+                  ? _localPreview(
+                      isLocalJoined: state.isLocalJoined,
+                      agoraEngine: state.agoraEngine,
+                      localUid: state.localUid)
+                  : _remoteVideo(
+                      remoteUid: state.remoteUid,
+                      agoraEngine: state.agoraEngine,
+                      channelName: state.channelName,
+                      isJoined: state.isJoined);
             } else {
-              return SizedBox();
+              return const SizedBox();
             }
           },
         ),
@@ -226,18 +337,51 @@ class LocalCameraView extends StatelessWidget {
                 size.height > size.width ? size.width / 3.8 : size.width / 4.7,
             height:
                 size.height > size.width ? size.height / 5 : size.height / 3.8,
-            child: BlocBuilder<VideocallBloc, VideocallState>(
-              builder: (context, state) {
-                log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh $state");
-                if (state is VideocallingState) {
-                  return _localPreview(
-                      isLocalJoined: state.isLocalJoined,
-                      agoraEngine: state.agoraEngine,
-                      localUid: state.localUid);
-                } else {
-                  return SizedBox();
-                }
-              },
+            child: ValueListenableBuilder(
+              valueListenable: isLocalUserView,
+              builder: (context, value, child) =>
+                  BlocBuilder<VideocallBloc, VideocallState>(
+                builder: (context, state) {
+                  if (state is VideocallingState) {
+                    log(value.toString());
+                    return isLocalUserView.value
+                        ? InkWell(
+                            onDoubleTap: () {
+                              if (state.isJoined) {
+                                isLocalUserView.value = !isLocalUserView.value;
+                                log("heloooooooooo  doubletabbbbb");
+                              }
+                            },
+                            onTap: () {
+                              state.agoraEngine.switchCamera();
+                            },
+                            child: _remoteVideo(
+                                remoteUid: state.remoteUid,
+                                agoraEngine: state.agoraEngine,
+                                channelName: state.channelName,
+                                isJoined: state.isJoined),
+                          )
+                        : InkWell(
+                            onDoubleTap: () {
+                              if (state.isJoined) {
+                                isLocalUserView.value = !isLocalUserView.value;
+                                log("heloooooooooo  doubletabbbbb");
+                              }
+                            },
+                            onTap: () {
+                              state.agoraEngine.switchCamera();
+                            },
+                            child: _localPreview(
+                                isLocalJoined: state.isLocalJoined,
+                                agoraEngine: state.agoraEngine,
+                                localUid: state.localUid),
+                          );
+                    ;
+                  } else {
+                    return const SizedBox();
+                  }
+                },
+              ),
             ),
           ),
         ),
@@ -284,7 +428,10 @@ Widget _localPreview(
     return AgoraVideoView(
       controller: VideoViewController(
         rtcEngine: agoraEngine,
-        canvas: VideoCanvas(uid: 0, renderMode: RenderModeType.renderModeFit),
+        canvas: const VideoCanvas(
+            uid: 0,
+            renderMode: RenderModeType.renderModeFit,
+            setupMode: VideoViewSetupMode.videoViewSetupAdd),
       ),
     );
   } else {

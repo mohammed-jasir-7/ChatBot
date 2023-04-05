@@ -45,6 +45,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
       await agoraEngine.initialize(const RtcEngineContext(appId: appId));
 
       await agoraEngine.enableVideo();
+
       //await agoraEngine.enableLocalVideo(true);
       /// send requesst to remote user
       ///
@@ -255,6 +256,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
         );
     //=============================================================================
     on<LeavecallEvent>((event, emit) {
+      distroy();
       emit(LeavecallState());
     });
   }
@@ -293,5 +295,17 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
     } catch (e) {
       e;
     }
+  }
+
+  distroy() {
+    agoraEngine.leaveChannel();
+    agoraEngine.release();
+  }
+
+  @override
+  Future<void> close() {
+    agoraEngine.leaveChannel();
+    agoraEngine.release();
+    return super.close();
   }
 }

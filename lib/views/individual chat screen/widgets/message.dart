@@ -89,7 +89,7 @@ class Message extends StatelessWidget {
                             //user remote side
                             if (message.sendby != uID)
                               Icon(
-                                Icons.call_missed_outgoing,
+                                Icons.call_received,
                                 color:
                                     message.isRead ? successColor : errorColor,
                               ),

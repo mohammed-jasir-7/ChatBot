@@ -52,9 +52,9 @@ class AuthService {
 
       // add to database(realtime database)
       final user = await FirebaseAuth.instance.signInWithCredential(credential);
-      FirebaseFirestore _firestire = FirebaseFirestore.instance;
+      FirebaseFirestore firestire = FirebaseFirestore.instance;
       if (user.additionalUserInfo!.isNewUser == true) {
-        _firestire.collection("users").doc(user.user?.uid).set({
+        firestire.collection("users").doc(user.user?.uid).set({
           "userId": user.user?.uid,
           "photo": user.additionalUserInfo!.profile!['picture'],
           "email": user.user!.email
