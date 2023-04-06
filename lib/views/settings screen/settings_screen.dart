@@ -1,16 +1,12 @@
-import 'package:chatbot/Controllers/chat%20bloc/chat_bloc.dart';
-import 'package:chatbot/Controllers/gchat%20bloc/gchat_bloc.dart';
-import 'package:chatbot/Controllers/group%20chat%20bloc/group_bloc.dart';
-import 'package:chatbot/Controllers/group%20functionality/group_functionality_bloc.dart';
 import 'package:chatbot/util.dart';
 import 'package:chatbot/views/common/widgets/custom_text.dart';
+import 'package:chatbot/views/settings%20screen/settings_info.dart';
 import 'package:chatbot/views/settings%20screen/widgets/profile_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import '../../Controllers/authentication/authentication_bloc.dart';
 import '../../Controllers/profile/profile_bloc_bloc.dart';
 import '../splash Screen/splash_screen.dart';
 
@@ -47,7 +43,7 @@ class SettingsScreen extends StatelessWidget {
                             size: 20,
                           );
                         }
-                        return SizedBox();
+                        return const SizedBox();
                       },
                     ),
                     IconButton(onPressed: () {}, icon: const Icon(Icons.edit))
@@ -55,38 +51,10 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 Column(
                   children: List.generate(
-                      4,
-                      (index) =>
-                          settingsList(listdata[index][0], listdata[index][1])),
+                      3,
+                      (index) => settingsList(
+                          listdata[index][0], listdata[index][1], context)),
                 ),
-                ElevatedButton(
-                    onPressed: () async {
-                      // context.read<ChatBloc>().close();
-                      // context.read<GroupFunctionalityBloc>().close();
-                      // context.read<GchatBloc>().close();
-
-                      final gg = GoogleSignIn();
-
-                      gg.disconnect();
-                      FirebaseFirestore.instance.clearPersistence();
-                      await FirebaseAuth.instance.signOut();
-
-                      if (context.mounted) {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SplashScreen(),
-                            ),
-                            (route) => false);
-                        // context.read<ChatBloc>().add(ChatInitialEvent());
-                        // context.read<GchatBloc>().add(GchatInitialEvent());
-                        // context.read<GroupBloc>().add(GroupInitialEvent());
-                        // context
-                        //     .read<GroupFunctionalityBloc>()
-                        //     .add(GroupFunctionalityInitialEvent());
-                      }
-                    },
-                    child: const Text("logout"))
               ],
             ),
           ),
@@ -96,17 +64,43 @@ class SettingsScreen extends StatelessWidget {
   }
 
   List<List> listdata = [
-    [Icons.person, "Account"],
-    [Icons.info, "About us"],
-    [Icons.notifications, "Notifications"],
-    [Icons.shield, "privacy"],
+    [Icons.person, "Info"],
+    [Icons.info, "Help"],
+    [Icons.logout, "Logout"],
   ];
 
-  ListTile settingsList(IconData icon, String field) {
+  ListTile settingsList(IconData icon, String field, BuildContext context) {
     return ListTile(
+      onTap: () {
+        switch (field) {
+          case "Info":
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsInfo(field: "Info"),
+                ));
+
+            break;
+
+          case "Help":
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsInfo(field: "Logout"),
+                ));
+
+            break;
+          case "Logout":
+            alert(context: context);
+
+            break;
+
+          default:
+        }
+      },
       leading: Icon(
         icon,
-        color: iconColorGreen,
+        color: field == "Logout" ? errorColor : iconColorGreen,
       ),
       title: CustomText(
         content: field,
@@ -114,4 +108,60 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+alert({
+  required BuildContext context,
+}) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      // <-- SEE HERE
+      title: Text("Logout"),
+      content: SingleChildScrollView(
+        child: ListBody(
+          children: [
+            const Text('Are you sure want to Logout?'),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('No'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+        TextButton(
+          child: const Text('Yes'),
+          onPressed: () async {
+            // context.read<ChatBloc>().close();
+            // context.read<GroupFunctionalityBloc>().close();
+            // context.read<GchatBloc>().close();
+
+            final gg = GoogleSignIn();
+
+            gg.disconnect();
+            FirebaseFirestore.instance.clearPersistence();
+            await FirebaseAuth.instance.signOut();
+
+            if (context.mounted) {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SplashScreen(),
+                  ),
+                  (route) => false);
+              // context.read<ChatBloc>().add(ChatInitialEvent());
+              // context.read<GchatBloc>().add(GchatInitialEvent());
+              // context.read<GroupBloc>().add(GroupInitialEvent());
+              // context
+              //     .read<GroupFunctionalityBloc>()
+              //     .add(GroupFunctionalityInitialEvent());
+            }
+          },
+        ),
+      ],
+    ),
+  );
 }

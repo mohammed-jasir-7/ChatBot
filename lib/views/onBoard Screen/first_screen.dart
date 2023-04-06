@@ -1,4 +1,5 @@
 import 'package:chatbot/views/common/widgets/custom_text.dart';
+import 'package:chatbot/views/sign%20up%20screen/sign_up_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../util.dart';
@@ -26,7 +27,14 @@ class OnBoardScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignUpScreen(),
+                            ),
+                            (route) => false);
+                      },
                       child: const CustomText(
                         content: "Skip",
                         colour: colorWhite,

@@ -31,6 +31,13 @@ class _VideocallScreenState extends State<VideocallScreen> {
   }
 
   @override
+  void deactivate() {
+    context.read<VideocallBloc>().add(LeavecallEvent());
+
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
     context.read<VideocallBloc>().add(LeavecallEvent());
     super.dispose();

@@ -3,18 +3,18 @@ List<Map> items = [
     "image": "assets/images/chatBot_Hello.png",
     "title": "Secure",
     "content":
-        "ChatBot secure system from  hacker attack and guarantee your data safe"
+        "Stay connected with your friends and family without worrying about your security!"
   },
   {
     "image": "assets/images/chatBot_head.png",
     "title": "Fast Messaging",
     "content":
-        "ChatBot secure system from  hacker attack and guarantee your data safe"
+        "Share your feelings, thoughts, and messages with loved ones within seconds."
   },
   {
     "image": "assets/images/chatBot_phone.png",
-    "title": "Fast Messaging",
+    "title": "Video Chat",
     "content":
-        "ChatBot secure system from  hacker attack and guarantee your data safe"
+        "Video Chat Express yourself and have heart-to-heart conversations with the video chat feature"
   }
 ];
