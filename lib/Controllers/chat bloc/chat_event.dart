@@ -51,7 +51,7 @@ class ProvideChatEvent extends ChatEvent {
 
   const ProvideChatEvent({required this.allMessages});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [allMessages];
 }
 
 class ChatLoadingEvent extends ChatEvent {

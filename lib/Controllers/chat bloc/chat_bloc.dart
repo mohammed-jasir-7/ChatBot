@@ -20,11 +20,6 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
       // emit(LoadingState());
 
-      final online = FirebaseFirestore.instance
-          .collection("users")
-          .doc(event.bot.uid)
-          .snapshots();
-
       emit(ChatFirstState(bot: event.bot, roomID: roomID));
     });
 
@@ -35,20 +30,11 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
           .doc(event.roomId)
           .collection("chats")
           .orderBy("time", descending: true)
-          .snapshots();
-      CombineLatestStream.list([
-        message,
-      ]).listen((value) async {
+          .snapshots()
+          .listen((value) async {
         List<PersonalMsgModel> allmessages = [];
-        // if ((value[1] as DocumentSnapshot<Map<String, dynamic>>)
-        //     .get("isOnline")) {
-        //   add(OnlineEvent());
-        // } else {
-        //   add(OfflineEvent());
-        // }
 
-        for (var msg
-            in (value[0] as QuerySnapshot<Map<String, dynamic>>).docs) {
+        for (var msg in value.docs) {
           String time = msg.data()["time"] != null
               ? (msg.data()["time"] as Timestamp).toDate().toString()
               : DateTime.now().toString();
@@ -67,14 +53,12 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     });
     //online anf offline event
 
-    on<OnlineEvent>((event, emit) => emit(OnlineState()));
-    on<OfflineEvent>((event, emit) => emit(OfflineState()));
     //===================================================================
     on<SendMessageEvent>((event, emit) async {
       chatService.onMessaging(message: event.messages, roomID: event.roomID);
     });
     //initial event
-    on<ChatInitialEvent>((event, emit) => emit(ChatInitial()));
+    // on<ChatInitialEvent>((event, emit) => emit(ChatInitial()));
     //provide all messages
     on<ProvideChatEvent>((event, emit) =>
         emit(PovideAllMessageState(allMessages: event.allMessages)));

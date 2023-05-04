@@ -1,3 +1,6 @@
+import 'package:chatbot/Controllers/user%20status/status_cubit.dart';
+import 'package:chatbot/injectable.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -42,22 +45,26 @@ class AppBarForChat extends StatelessWidget {
               content: bot.username ?? "",
               colour: colorWhite,
             ),
-            BlocBuilder<ChatBloc, ChatState>(
-              builder: (context, state) {
-                if (state is OnlineState) {
-                  return const CustomText(
-                    content: "online",
-                    colour: colorWhite,
-                    size: 10,
-                  );
-                } else {
-                  return const CustomText(
-                    content: "offline",
-                    colour: colorWhite,
-                    size: 10,
-                  );
-                }
-              },
+            BlocProvider(
+              create: (context) => StatusCubit(
+                  firestore: getIt.get<FirebaseFirestore>(), userId: bot.uid),
+              child: BlocBuilder<StatusCubit, StatusState>(
+                builder: (context, state) {
+                  if (state is OnlineState) {
+                    return const CustomText(
+                      content: "online",
+                      colour: colorWhite,
+                      size: 10,
+                    );
+                  } else {
+                    return const CustomText(
+                      content: "offline",
+                      colour: colorWhite,
+                      size: 10,
+                    );
+                  }
+                },
+              ),
             )
           ],
         ),

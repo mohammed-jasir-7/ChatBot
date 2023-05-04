@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 import 'package:chatbot/Controllers/videocall/videocall_bloc.dart';
 import 'package:chatbot/util.dart';
@@ -8,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:lottie/lottie.dart';
-
 import '../../Models/user_model.dart';
 
 const String appId = "e52f2861ba4a4fd4bf374a7e6fa4e0b3";
@@ -251,8 +249,8 @@ class VideoCallButtons extends StatelessWidget {
                           backgroundColor: Colors.red, // <-- Button color
                           foregroundColor: Colors.black, // <-- Splash color
                         ),
-                        onPressed: () {
-                          leave(agoraEngine: state.agoraEngine);
+                        onPressed: () async {
+                          await leave(agoraEngine: state.agoraEngine);
                           Navigator.pop(context);
                         },
                         child: const Icon(Icons.video_call));
@@ -397,9 +395,9 @@ class LocalCameraView extends StatelessWidget {
   }
 }
 
-void leave({required RtcEngine agoraEngine}) {
-  agoraEngine.leaveChannel();
-  agoraEngine.release();
+Future<void> leave({required RtcEngine agoraEngine}) async {
+  await agoraEngine.leaveChannel();
+  //await agoraEngine.release();
 }
 
 Widget _remoteVideo(

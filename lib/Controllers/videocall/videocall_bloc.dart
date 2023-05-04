@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-
 import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-
 import 'package:chatbot/Service/chat/chat_service.dart';
 import 'package:chatbot/Service/videocall%20service/endpoints.dart';
 import 'package:chatbot/views/call%20screen/call_screen.dart';
@@ -24,7 +22,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
       : super(VideocallInitial()) {
     String role = "publisher";
     String tokenType = "userAccount";
-
+    // final RtcEngine agoraEngine = createAgoraRtcEngine();
     on<VideocallingEvent>((event, emit) async {
       emit(ConnectingState());
 
@@ -51,6 +49,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
       ///
       final remoteUser =
           await firestore.collection("users").doc(event.botId).get();
+
       final localUser = await firestore
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -70,15 +69,13 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
 //=======================
         ///update to database
         ///text notification
-
-        log("beforeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee reg handkler");
+        log("helloooooooooooooooooooooooooooooooooooooooooo");
 
 //===================end text notification ========================================
         agoraEngine.registerEventHandler(
           RtcEngineEventHandler(
             onJoinChannelSuccess: (RtcConnection connection, int elapsed) {
               islocalJoin = true;
-              log("locaalllllllllllllaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaal joined");
 
               add(ClientJoinedEvent(
                   localusername: localUser.data()!["userName"],
@@ -93,7 +90,6 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
                 (RtcConnection connection, int remoteUidd, int elapsed) {
               isremoteJoin = true;
               remoteUid = remoteUidd;
-              log("remoteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee joined");
 
               add(ClientJoinedEvent(
                   localusername: localUser.data()!["userName"],
@@ -111,17 +107,20 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
             },
           ),
         );
+        log("helloooooooooooooooooooooooooooooooooooooooooo 2222222222222");
         //end register event handler==================================
         //create token
-
+        log("$channelName/$role/$tokenType/$localUid/");
         final response = await http.get(
             Uri.parse("$tokenBase$channelName/$role/$tokenType/$localUid/"));
+        log(response.body);
         final result = json.decode(response.body);
 
         //response.body as Map;
 
         token = result["rtcToken"];
         await agoraEngine.startPreview();
+        log("helloooooooooooooooooooooooooooooooooooooooooo33333333333");
 
         // Set channel options including the client role and channel profile
         ChannelMediaOptions options = const ChannelMediaOptions(
@@ -134,9 +133,8 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
             channelId: channelName,
             uid: localUid,
             options: options);
-        log("hellllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllo");
       }
-
+      log("$token $channelName $localUid");
       // Register the event handler
     });
 //============================================================================================================
@@ -299,7 +297,7 @@ class VideocallBloc extends Bloc<VideocallEvent, VideocallState> {
 
   distroy() {
     agoraEngine.leaveChannel();
-    agoraEngine.release();
+    // agoraEngine.release();
   }
 
   @override

@@ -1,21 +1,13 @@
 import 'dart:developer';
-
 import 'package:chatbot/Controllers/videocall/videocall_bloc.dart';
 import 'package:chatbot/Service/chat/chat_service.dart';
-import 'package:chatbot/views/call%20screen/call_screen.dart';
 import 'package:chatbot/views/videocall%20screen/videocall_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../../../Controllers/chat bloc/chat_bloc.dart';
 import '../../../Controllers/search bloc/search_bloc.dart';
-
 import '../../../Controllers/users bloc/users_bloc.dart';
 import '../../../Models/user_model.dart';
 import '../../../util.dart';
@@ -44,7 +36,6 @@ class _UsersListInContactState extends State<UsersListInContact> {
 
   @override
   Widget build(BuildContext context) {
-    int localUid = FirebaseAuth.instance.currentUser!.uid.codeUnits[0];
     log("userlistincontact");
     return Column(
       children: [

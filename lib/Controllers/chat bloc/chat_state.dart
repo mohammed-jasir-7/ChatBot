@@ -18,7 +18,7 @@ class ChatFirstState extends ChatState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [bot, roomID];
+  List<Object?> get props => [];
 }
 
 class LoadingState extends ChatState {
@@ -34,16 +34,6 @@ class ChatData extends ChatState {
 
   @override
   // TODO: implement props
-  List<Object?> get props => [];
-}
-
-class OnlineState extends ChatState {
-  @override
-  List<Object?> get props => [];
-}
-
-class OfflineState extends ChatState {
-  @override
   List<Object?> get props => [];
 }
 

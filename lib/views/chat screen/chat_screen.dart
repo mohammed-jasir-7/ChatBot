@@ -93,6 +93,7 @@ class ChatScreen extends StatelessWidget {
                 stream:
                     FirebaseFirestore.instance.collection('users').snapshots(),
                 builder: (context, snapshot) {
+                  log("first stream listern users");
                   if (snapshot.hasData) {
                     users.clear();
                     for (var element in snapshot.data!.docs) {
@@ -114,6 +115,7 @@ class ChatScreen extends StatelessWidget {
                             .collection("connections")
                             .snapshots(),
                         builder: (context, snapshot) {
+                          log("first stream listern connection");
                           connections.clear();
                           if (snapshot.hasData) {
                             for (var connection in snapshot.data!.docs) {

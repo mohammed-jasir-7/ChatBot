@@ -41,11 +41,9 @@ class ChatService {
     final String currentUser = FirebaseAuth.instance.currentUser!.uid;
     if (botUid.codeUnits[0] > currentUser.codeUnits[0]) {
       String roomId = "$botUid$currentUser";
-      log(" trur  $botUid and $currentUser");
       return roomId;
     } else {
       String roomId = "$currentUser$botUid";
-      log(" flas  $currentUser and $botUid");
       return roomId;
     }
   }

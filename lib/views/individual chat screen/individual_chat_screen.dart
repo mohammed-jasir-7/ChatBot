@@ -127,7 +127,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
                               ? DateFormat.yMMMMEEEEd().format((DateTime.parse(
                                   snapshot.allMessages[index + 1].time)))
                               : "";
-
+                          log("$index ${snapshot.allMessages.length - 1}${snapshot.allMessages[index].message}  $previousDate");
                           String date = DateFormat.yMMMMEEEEd().format(
                               DateTime.parse(snapshot.allMessages[index].time));
                           log(previousDate);
