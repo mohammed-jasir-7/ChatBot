@@ -6,7 +6,7 @@ import 'package:chatbot/Controllers/search%20bloc/search_bloc.dart';
 import 'package:chatbot/Controllers/videocall/videocall_bloc.dart';
 import 'package:chatbot/injectable.dart';
 import 'package:chatbot/util.dart';
-import 'package:chatbot/views/splash%20Screen/splash_screen.dart';
+import 'package:chatbot/views/splash_screen/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';

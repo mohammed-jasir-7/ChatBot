@@ -42,9 +42,9 @@ class AuthenticationBloc
     on<VerifiedUserEvent>((event, emit) {
       // add to database(realtime database)
 
-      FirebaseFirestore _firestire = FirebaseFirestore.instance;
+      FirebaseFirestore firestire = FirebaseFirestore.instance;
       if (user!.additionalUserInfo!.isNewUser == true) {
-        _firestire.collection("users").doc(user!.user?.uid).set({
+        firestire.collection("users").doc(user!.user?.uid).set({
           "userId": user?.user?.uid,
           "photo": user!.additionalUserInfo!.profile!['picture'],
           "email": user!.user!.email

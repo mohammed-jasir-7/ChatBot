@@ -94,8 +94,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
                       uid: element.data()["userId"],
                       email: element.data()["email"],
                       state: BotsState.connected,
-                      photo: element.data()["photo"] ??
-                          "assets/images/nullPhoto.jpeg",
+                      photo: element.data()["photo"],
                       username: element.data()["userName"] ?? ""));
                   log(" enterd connected");
                   flag = 1;
@@ -110,8 +109,7 @@ class UsersBloc extends Bloc<UsersEvent, UsersState> {
                   uid: element.data()["userId"],
                   email: element.data()["email"],
                   state: BotsState.connect,
-                  photo:
-                      element.data()["photo"] ?? "assets/images/nullPhoto.jpeg",
+                  photo: element.data()["photo"],
                   username: element.data()["userName"] ?? ""));
             }
           }
