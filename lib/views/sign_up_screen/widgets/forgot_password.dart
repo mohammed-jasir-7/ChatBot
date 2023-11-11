@@ -19,7 +19,7 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
-    final _emailController = TextEditingController();
+    final emailController = TextEditingController();
     final forgotFormkey = GlobalKey<FormState>();
     return Form(
         key: forgotFormkey,
@@ -28,7 +28,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           child: Column(
             children: [
               TextFormField(
-                controller: _emailController,
+                controller: emailController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Email is empty";
@@ -55,7 +55,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         if (forgotFormkey.currentState!.validate()) {
                           BlocProvider.of<AuthenticationBloc>(context)
                               .add(ForgotPasswordEvent(
-                            email: _emailController.text,
+                            email: emailController.text,
                           ));
                         }
                       },

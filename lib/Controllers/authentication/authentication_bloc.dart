@@ -25,6 +25,7 @@ class AuthenticationBloc
       String? sendVerificationEmailError =
           await AuthService.sendVerificationEmail();
       if (isSigned is UserCredential) {
+        log("isSigneddd");
         user = isSigned;
         //emit(SignedState(isSigned: isSigned));
       } else {
@@ -74,12 +75,12 @@ class AuthenticationBloc
     });
     on<GoogleSignInEvent>((event, emit) async {
       emit(LoadingState(isLoading: true));
-      final result = await AuthService.googleSignIn();
+      var result = await AuthService.googleSignIn();
       if (result is UserCredential) {
         emit(LoadingState(isLoading: false));
         // add(LoadSignUpScreenEvent());
         if (result.additionalUserInfo!.isNewUser) {
-          emit(UsernameState());
+          emit(const UsernameState());
         } else {
           emit(SignedState(isSigned: result));
         }
@@ -97,7 +98,6 @@ class AuthenticationBloc
       final result = await AuthService.forgotpassword(event.email);
 
       if (result != null) {
-        log("hhhhhhhhhhhhhhh");
         emit(ValidationErrorState(exceptionOnLogin: result));
       } else {
         emit(ResetPasswordSuccessState());

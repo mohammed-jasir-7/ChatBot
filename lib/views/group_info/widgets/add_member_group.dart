@@ -21,7 +21,7 @@ class AddMember extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => NewGroupScreen(
-                        connections: [],
+                        connections: const [],
                         isAddMemberScreen: true,
                         groupId: groupId,
                         gName: gname,

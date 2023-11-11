@@ -24,12 +24,12 @@ class SettingsInfo extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
             child: IconButton(
                 onPressed: () {
                   Navigator.pop(context);
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.close,
                   color: colorWhite,
                 )),
@@ -49,8 +49,8 @@ class SettingsInfo extends StatelessWidget {
                 style: GoogleFonts.poppins(color: colorWhite.withOpacity(0.5)),
               ),
               if (field == "Info")
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: CustomText(
                       align: TextAlign.center,
                       colour: colorWhite,

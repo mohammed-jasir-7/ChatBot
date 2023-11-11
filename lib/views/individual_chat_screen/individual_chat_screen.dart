@@ -89,7 +89,7 @@ class _IndividualChatScreenState extends State<IndividualChatScreen>
 
   @override
   Widget build(BuildContext context) {
-    log("ivduvidual screeeeeen");
+    log("ivduvidual screeeeeen",name: "induvidual");
     return Scaffold(
       extendBody: true,
       backgroundColor: backroundColor,

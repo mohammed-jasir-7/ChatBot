@@ -97,7 +97,7 @@ class Message extends StatelessWidget {
                               CustomText(
                                 content: message.isRead
                                     ? "${message.message}video chat"
-                                    : "${message.message}You missed video chat",
+                                    : "${message.message} missed video chat",
                                 colour: colorMessageClientTextWhite,
                               ),
                           ],

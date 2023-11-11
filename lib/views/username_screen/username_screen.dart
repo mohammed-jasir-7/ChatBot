@@ -12,7 +12,7 @@ class UsernameScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _userNameController = TextEditingController();
+    final userNameController = TextEditingController();
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -50,7 +50,7 @@ class UsernameScreen extends StatelessWidget {
                   sizeHeight15,
                   TextField(
                     obscureText: true,
-                    controller: _userNameController,
+                    controller: userNameController,
                     style: GoogleFonts.poppins(color: colorWhite),
                     decoration: textFormFieldStyle("enter username"),
                   ),
@@ -59,11 +59,11 @@ class UsernameScreen extends StatelessWidget {
                     width: 300,
                     child: ElevatedButton(
                         onPressed: () {
-                          if (_userNameController.text.isNotEmpty) {
+                          if (userNameController.text.isNotEmpty) {
                             FirebaseFirestore.instance
                                 .collection("users")
                                 .doc(FirebaseAuth.instance.currentUser!.uid)
-                                .update({"userName": _userNameController.text});
+                                .update({"userName": userNameController.text});
                             Navigator.of(context).pushAndRemoveUntil(
                                 MaterialPageRoute(
                                   builder: (context) => const HomeScreen(),

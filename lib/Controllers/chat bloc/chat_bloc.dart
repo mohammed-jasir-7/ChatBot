@@ -5,7 +5,7 @@ import 'package:chatbot/Models/user_model.dart';
 import 'package:chatbot/Service/chat/chat_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:rxdart/rxdart.dart';
+
 part 'chat_event.dart';
 part 'chat_state.dart';
 

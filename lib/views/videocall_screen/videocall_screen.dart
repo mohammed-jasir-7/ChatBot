@@ -110,7 +110,7 @@ class _VideocallScreenState extends State<VideocallScreen> {
                   child: Widg(size: size),
                 ),
                 onDragEnd: (details) => updatePosition(details.offset),
-                child: Widg(size: size),
+                child: Material(child: Widg(size: size)),
               ),
             ),
 
@@ -192,7 +192,7 @@ class Widg extends StatelessWidget {
                           agoraEngine: state.agoraEngine,
                           localUid: state.localUid),
                     );
-              ;
+              
             } else {
               return const SizedBox();
             }
@@ -255,7 +255,7 @@ class VideoCallButtons extends StatelessWidget {
                         },
                         child: const Icon(Icons.video_call));
                   } else {
-                    return Container(
+                    return SizedBox(
                         width: 120,
                         height: 100,
                         child: Lottie.asset('assets/images/wave.json'));
@@ -333,7 +333,7 @@ class LocalCameraView extends StatelessWidget {
       alignment: Alignment.bottomLeft,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 80, left: 10),
-        child: InkWell(
+        child: Material(
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
@@ -381,7 +381,6 @@ class LocalCameraView extends StatelessWidget {
                                 agoraEngine: state.agoraEngine,
                                 localUid: state.localUid),
                           );
-                    ;
                   } else {
                     return const SizedBox();
                   }

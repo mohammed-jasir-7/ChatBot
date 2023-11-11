@@ -15,48 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "279249510513-uhos6fn0gerinopuep5mrbnjqlr6152t.apps.googleusercontent.com",
+          "client_id": "279249510513-k9hrdkhuhmhr2unng3t7u04eccggtlje.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.canvas.chatbot",
-            "certificate_hash": "1708b265ae44fbe8c00ee713938b8e12eff1a9be"
-          }
-        },
-        {
-          "client_id": "279249510513-cketqnbgoi1dvv4ldm70kj9non9ru0ti.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCtgj0XHTP4OxRw8u8SJgbTHVZXuMJLuYU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "279249510513-1emg3e2uia9lf6ia154ch707bvbd4c5o.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:279249510513:android:d2b11484ebd22d4efe3bd0",
-        "android_client_info": {
-          "package_name": "com.example.chatbot"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "279249510513-5pkjerk9d0p5kn20nktgq3gn3t1lhtmd.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.chatbot",
-            "certificate_hash": "1708b265ae44fbe8c00ee713938b8e12eff1a9be"
+            "certificate_hash": "91f369d0a632802ef3ba3afeecc9aee96c7d4860"
           }
         },
         {

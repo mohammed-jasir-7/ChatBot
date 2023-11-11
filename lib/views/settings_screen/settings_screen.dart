@@ -55,6 +55,11 @@ class SettingsScreen extends StatelessWidget {
                       (index) => settingsList(
                           listdata[index][0], listdata[index][1], context)),
                 ),
+                ElevatedButton(onPressed: () {
+                 
+                  
+                  
+                }, child: Text('incognito mode'))
               ],
             ),
           ),

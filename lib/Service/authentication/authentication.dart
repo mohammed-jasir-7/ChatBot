@@ -46,23 +46,27 @@ class AuthService {
   static Future<dynamic> googleSignIn() async {
     try {
       final GoogleSignInAccount? guser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication gAuth = await guser!.authentication;
-      final credential = GoogleAuthProvider.credential(
-          accessToken: gAuth.accessToken, idToken: gAuth.idToken);
+      if (guser != null) {
+        final GoogleSignInAuthentication gAuth = await guser.authentication;
+        final credential = GoogleAuthProvider.credential(
+            accessToken: gAuth.accessToken, idToken: gAuth.idToken);
 
-      // add to database(realtime database)
-      final user = await FirebaseAuth.instance.signInWithCredential(credential);
-      FirebaseFirestore firestire = FirebaseFirestore.instance;
-      if (user.additionalUserInfo!.isNewUser == true) {
-        firestire.collection("users").doc(user.user?.uid).set({
-          "userId": user.user?.uid,
-          "photo": user.additionalUserInfo!.profile!['picture'],
-          "email": user.user!.email
-        });
+        // add to database(realtime database)
+        final user =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        FirebaseFirestore firestire = FirebaseFirestore.instance;
+        if (user.additionalUserInfo!.isNewUser == true) {
+          firestire.collection("users").doc(user.user?.uid).set({
+            "userId": user.user?.uid,
+            "photo": user.additionalUserInfo!.profile!['picture'],
+            "email": user.user!.email
+          });
+        }
+        return user;
       }
+      return "exited";
+
       //=================================
-      log(user.toString());
-      return user;
     } on FirebaseAuthException catch (e) {
       return e.code;
     }

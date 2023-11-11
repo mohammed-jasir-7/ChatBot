@@ -21,33 +21,28 @@ class SplashScreen extends StatelessWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        color: backroundColor,
-        child: Stack(children: [
-          Align(
-            alignment: Alignment.center,
-            child: Image.asset(
-              "assets/images/doodle2.png",
-              fit: BoxFit.cover,
-              filterQuality: FilterQuality.low,
+        
+        decoration: const BoxDecoration(
+          color: backroundColor,
+          image: DecorationImage(
+            fit: BoxFit.cover,
+            image: AssetImage( "assets/images/doodle2.png"))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset("assets/images/Asset 1@4xxx 1.png",filterQuality: FilterQuality.low,),
+              ],
             ),
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("assets/images/Asset 1@4xxx 1.png"),
-                ],
-              ),
-              Text(
-                "Version 1.0",
-                style: GoogleFonts.poppins(color: colorWhite.withOpacity(0.5)),
-              )
-            ],
-          ),
-        ]),
+            Text(
+              "Version 1.0",
+              style: GoogleFonts.poppins(color: colorWhite.withOpacity(0.5)),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -57,19 +52,19 @@ class SplashScreen extends StatelessWidget {
 Future authCheck(
   BuildContext context,
 ) async {
-  await Future.delayed(const Duration(seconds: 0));
+  await Future.delayed(const Duration(seconds: 3));
 
   final user = FirebaseAuth.instance.currentUser;
 
   if (context.mounted) {
-    if (user != null) {
+    if (user != null && user.emailVerified) {
       context.read<ProfileBlocBloc>().add(LoadingProfileEvent());
       context.read<GroupBloc>().add(FetchGroupsEvent());
 
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => const HomeScreen(),
           ),
           (route) => false);
     } else {

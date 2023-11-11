@@ -27,6 +27,12 @@ class _SignUpFormState extends State<SignUpForm> {
   final _passwordController = TextEditingController();
   final _signFormkey = GlobalKey<FormState>();
   @override
+  void dispose() {
+ _emailController.dispose();
+ _passwordController.dispose();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
     return Form(
         key: _signFormkey,
@@ -68,13 +74,11 @@ class _SignUpFormState extends State<SignUpForm> {
               BlocConsumer<AuthenticationBloc, AuthenticationState>(
                 listener: (context, state) {
                   if (state is UsernameState) {
-                    log("beforee");
-
-                    log("log hreee");
+                   
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => UsernameScreen(),
+                          builder: (context) => const UsernameScreen(),
                         ),
                         (route) => false);
                   } else if (state is ValidationErrorState) {
@@ -86,7 +90,7 @@ class _SignUpFormState extends State<SignUpForm> {
                       ),
                     );
                   } else if (state is EmailVerificationState) {
-                    log("jjjjjjjjjjjjjjjjjjjjjllllllllll${state.isVerified}");
+                   
                   }
                 },
                 builder: (context, state) {
@@ -98,7 +102,11 @@ class _SignUpFormState extends State<SignUpForm> {
                             stream: FirebaseAuth.instance.authStateChanges(),
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
-                                return const VerifyEmailButton();
+                                log("logged verify button${snapshot.data}");
+                                return VerifyEmailButton(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                );
                               } else {
                                 return ElevatedButton(
                                     onPressed: () async {

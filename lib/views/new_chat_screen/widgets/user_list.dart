@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:ui';
 import 'package:chatbot/Controllers/videocall/videocall_bloc.dart';
 import 'package:chatbot/Service/chat/chat_service.dart';
 import 'package:chatbot/views/individual_chat_screen/individual_chat_screen.dart';
@@ -33,7 +34,7 @@ class _UsersListInContactState extends State<UsersListInContact> {
     result = widget.users;
     super.initState();
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     log("userlistincontact");
@@ -62,87 +63,156 @@ class _UsersListInContactState extends State<UsersListInContact> {
             },
           ),
         ),
+        sizeHeight15,
 //list view
-        Expanded(
-          child: ListView.separated(
-              physics: const BouncingScrollPhysics(
-                  decelerationRate: ScrollDecelerationRate.fast),
-              shrinkWrap: true,
+        BlocListener<ChatBloc, ChatState>(
+          listener: (context, state) {
+            if (state is ChatFirstState) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context3) => IndividualChatScreen(
+                      bot: state.bot,
+                      roomID: state.roomID,
+                    ),
+                  ));
+            }
+          },
+          child: Expanded(
+            child: GridView.builder(
+              itemCount: result.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                childAspectRatio: 0.80,
+                crossAxisCount: 3, // number of items in each row
+                mainAxisSpacing: 8.0, // spacing between rows
+                crossAxisSpacing: 8.0, // spacing between columns
+              ),
               itemBuilder: (context, index) {
-                return BlocListener<ChatBloc, ChatState>(
-                  listener: (context, state) {
-                    log("bloc listnerrrrr $state");
-                    if (state is ChatFirstState) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => IndividualChatScreen(
-                              bot: state.bot,
-                              roomID: state.roomID,
-                            ),
-                          ));
+                return InkWell(
+                  onTap: () {
+                    if (!widget.iscontactScreen) {
+                      log("enter to event");
+
+                      context
+                          .read<ChatBloc>()
+                          .add(EnterToChatEvent(bot: result[index]));
                     }
                   },
-                  child: InkWell(
-                    onTap: () {
-                      if (!widget.iscontactScreen) {
-                        log("enter to event");
-
-                        context
-                            .read<ChatBloc>()
-                            .add(EnterToChatEvent(bot: result[index]));
-                      }
-                    },
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: colorWhite,
-                        radius: 20,
-                        backgroundImage: result[index].photo == null
-                            ? const AssetImage(nullPhoto) as ImageProvider
-                            : NetworkImage(result[index].photo ?? "555"),
-                      ),
-
-                      ///connection button
-                      trailing: widget.iscontactScreen
-                          ? requestButton(index)
-                          : Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                  child: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey,
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: result[index].photo == null
+                                  ? const AssetImage(
+                                      'assets/images/ifimagenull.jpg')
+                                  : NetworkImage(result[index].photo!)
+                                      as ImageProvider)),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 1.0,
+                            sigmaY: 1.0,
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 0, 0, 0)
+                                    .withOpacity(0.5)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                IconButton(
-                                    onPressed: () {
-                                      FirebaseFirestore.instance
-                                          .disableNetwork();
+                                CircleAvatar(
+                                  radius: 28,
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 0, 231, 248),
+                                  child: CircleAvatar(
+                                    radius: 25,
+                                    backgroundImage: result[index].photo == null
+                                        ? const AssetImage(
+                                            'assets/images/ifimagenull.jpg')
+                                        : NetworkImage(result[index].photo!)
+                                            as ImageProvider,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 3, horizontal: 10),
+                                  child: Text(
+                                    result[index].username == null ||
+                                            result[index].username!.isEmpty
+                                        ? 'Bot'
+                                        : result[index].username!,
+                                    overflow: TextOverflow.fade,
+                                    style: GoogleFonts.poppins(
+                                      color: colorWhite,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                  ),
+                                ),
+                                widget.iscontactScreen
+                                    ? requestButton(index)
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            alignment: Alignment.center,
+                                            height: 20,
+                                            width: 40,
+                                            child: IconButton(
+                                                style: const ButtonStyle(
+                                                    padding:
+                                                        MaterialStatePropertyAll(
+                                                            EdgeInsets
+                                                                .symmetric(
+                                                                    vertical: 0,
+                                                                    horizontal:
+                                                                        8))),
+                                                constraints:
+                                                    const BoxConstraints(
+                                                        maxHeight: 20),
+                                                onPressed: () {
+                                                  FirebaseFirestore.instance
+                                                      .disableNetwork();
 
-                                      final roomid = ChatService();
-                                      roomid.onCreateRoomId(result[index].uid);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                VideocallScreen(
-                                                    bot: result[index]),
-                                          ));
-                                      log("videoscreeen");
-                                      context.read<VideocallBloc>().add(
-                                          VideocallingEvent(
-                                              botId: result[index].uid));
-                                    },
-                                    icon: const Icon(
-                                      Icons.video_call,
-                                      color: colorlogo,
-                                    ))
+                                                  final roomid = ChatService();
+                                                  roomid.onCreateRoomId(
+                                                      result[index].uid);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            VideocallScreen(
+                                                                bot: result[
+                                                                    index]),
+                                                      ));
+                                                  log("videoscreeen");
+                                                  context
+                                                      .read<VideocallBloc>()
+                                                      .add(VideocallingEvent(
+                                                          botId: result[index]
+                                                              .uid));
+                                                },
+                                                icon: const Icon(
+                                                  Icons.video_call,
+                                                  color: colorlogo,
+                                                )),
+                                          )
+                                        ],
+                                      ),
                               ],
                             ),
-                      title: CustomText(
-                        content: result[index].username ?? "",
-                        colour: colorWhite,
-                      ),
-                    ),
-                  ),
+                          ),
+                        ),
+                      )),
                 );
               },
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: result.length),
+            ),
+          ),
         ),
       ],
     );
@@ -194,6 +264,8 @@ class _UsersListInContactState extends State<UsersListInContact> {
         height: 25,
         child: ElevatedButton(
             style: const ButtonStyle(
+                padding: MaterialStatePropertyAll(
+                    EdgeInsets.symmetric(horizontal: 7)),
                 backgroundColor: MaterialStatePropertyAll(successColor)),
             onPressed: () {},
             child: const CustomText(
